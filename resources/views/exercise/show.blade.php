@@ -58,7 +58,11 @@
                 </a>
               </sup>
             </h1>
-            @include(getExerciseListingViewFilepath($exercise))
+            
+            <div class="hexlet-basics-output">
+                {!! Str::markdown(getExerciseDescription($exercise)) !!}
+            </div>
+
             <hr>
             <div>
             @auth
