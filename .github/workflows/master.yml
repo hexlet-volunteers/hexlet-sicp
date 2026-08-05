@@ -27,6 +27,14 @@ jobs:
         run: |
           make ci
 
+      - name: Move Docker cache
+        if: always()
+        run: |
+          if [ -d /tmp/.docker-cache-new ]; then
+            rm -rf /tmp/.docker-cache
+            mv /tmp/.docker-cache-new /tmp/.docker-cache
+          fi
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
