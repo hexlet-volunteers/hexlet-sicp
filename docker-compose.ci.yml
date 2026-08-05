@@ -6,6 +6,15 @@ services:
       args:
         UID: ${UID:-1000}
         GID: ${GID:-1000}
+      # Кэш слоёв между прогонами CI. Читаем из директории, восстановленной
+      # actions/cache, пишем в отдельную — иначе экспорт наслаивается на импорт
+      # и кэш растёт неограниченно. Требует драйвер docker-container
+      # (docker/setup-buildx-action), стандартный docker-драйвер не умеет
+      # экспортировать кэш.
+      cache_from:
+        - type=local,src=/tmp/.docker-cache
+      cache_to:
+        - type=local,dest=/tmp/.docker-cache-new,mode=max
     volumes:
       - .:/app
     depends_on:
