@@ -62,13 +62,13 @@ compose-check:
 	docker compose run --rm application make check
 
 ci:
-	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci build
+	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci build ${BUILD_ARGS}
 	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci run --rm application make setup
 	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci up --abort-on-container-exit
 	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci down -v --remove-orphans
 
 ci-solutions:
-	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci build
+	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci build ${BUILD_ARGS}
 	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci run --rm application make install-app test-solutions test-sandbox
 	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci down -v --remove-orphans
 
