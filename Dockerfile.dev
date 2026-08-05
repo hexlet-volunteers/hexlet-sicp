@@ -1,3 +1,5 @@
+# NOTE: PHP 8.4 comes from packages.sury.org, which lags behind new Ubuntu releases.
+# Before bumping this tag, check the codename in https://packages.sury.org/php/dists/
 FROM ubuntu:26.04
 
 WORKDIR /app
@@ -9,9 +11,8 @@ ENV PHP_VERSION=8.4
 ENV NODE_MAJOR=24
 
 RUN apt-get update \
-    && apt-get -y install software-properties-common \
-    && add-apt-repository ppa:ondrej/php \
     && apt-get install -y \
+    ca-certificates \
     make \
     curl \
     gnupg \
@@ -25,12 +26,26 @@ RUN apt-get update \
 
 RUN raco pkg install sicp
 
+# ppa:ondrej/php has been merged into packages.sury.org and has no pocket newer
+# than noble, while the Ubuntu 26.04 archive only ships PHP 8.5.
+RUN set -eu; \
+    . /etc/os-release; \
+    install -d -m 0755 /etc/apt/keyrings; \
+    curl -fsSLo /etc/apt/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg; \
+    chmod 0644 /etc/apt/keyrings/deb.sury.org-php.gpg; \
+    printf 'Types: deb\nURIs: https://packages.sury.org/php/\nSuites: %s\nComponents: main\nSigned-By: /etc/apt/keyrings/deb.sury.org-php.gpg\n' \
+    "${VERSION_CODENAME}" > /etc/apt/sources.list.d/php.sources
+
+# A separate layer on purpose: when the repository above has no pocket for the
+# base image codename, the build fails here with apt's own explicit
+# "does not have a Release file" instead of an opaque install failure below.
+RUN apt-get update
+
 RUN apt-get install -y \
     php${PHP_VERSION} \
     php${PHP_VERSION}-bcmath \
     php${PHP_VERSION}-exif \
     php${PHP_VERSION}-pdo \
-    php${PHP_VERSION}-pgsql \
     php${PHP_VERSION}-pgsql \
     php${PHP_VERSION}-zip \
     php${PHP_VERSION}-xdebug \
