@@ -19,9 +19,21 @@ jobs:
         uses: actions/cache@v6
         with:
           path: /tmp/.docker-cache
-          key: docker-${{ github.sha }}
+          key: docker-${{ hashFiles('Dockerfile.dev', 'xdebug.ini') }}
           restore-keys: |
             docker-
+
+      # Загрузочные кэши composer и npm. Кэш слоёв их не покрывает:
+      # composer install и npm ci выполняются в рантайме, а не при сборке образа.
+      - name: Cache PHP and JS dependencies
+        uses: actions/cache@v6
+        with:
+          path: |
+            .composer-cache
+            .npm-cache
+          key: deps-${{ hashFiles('composer.lock', 'package-lock.json') }}
+          restore-keys: |
+            deps-
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
