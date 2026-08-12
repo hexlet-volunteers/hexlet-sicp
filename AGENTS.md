@@ -6,6 +6,20 @@ This file provides guidance to AI coding agents (Claude Code, Codex, Cursor, Aid
 
 Hexlet SICP — трекер изучения книги SICP. Пользователи читают главы (иерархическое дерево), решают упражнения на Scheme/Racket и отслеживают прогресс с лидербордами. Стек: **Laravel 13 (PHP 8.3+), Inertia.js + React 19 + Vite, Blade, SQLite (local) / PostgreSQL (prod)**.
 
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues в **`hexlet-volunteers/hexlet-sicp`** (upstream, не форк), через `gh` CLI; issue пишутся по-русски. См. `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Пять канонических меток (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`) уже существуют в трекере под своими именами — маппинг не нужен. См. `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` (ещё не создан) + `docs/adr/` в корне; четыре ADR — все про фронтенд. См. `docs/agents/domain.md`.
+
 ## Commands
 
 Всё запускается через Makefile. Локально (SQLite + локальный PHP):
@@ -56,6 +70,16 @@ Docker: команды с префиксом `compose-*` в `make-compose.mk` (�
 - Inertia-корень: `resources/views/app.blade.php` (`@inertia`). React-вход: `resources/js/app.jsx`; компоненты в `resources/js/components`, страницы в `resources/js/pages`, Redux в `resources/js/slices`. Алиас `@` → `resources/js`.
 - Vite (`vite.config.js`) — несколько entry points (app.jsx, editor.js, hljs.js, custom.js, app.scss).
 - Локализация двухслойная: бэкенд `resources/lang/{en,ru}` + mcamara/laravel-localization (маршруты префиксованы локалью `/{locale}/...` в `routes/web.php`); фронтенд i18next (`resources/js/i18n.js`, `resources/js/locales/{en,ru}.js`).
+
+### Миграция фронтенда на Inertia + Mantine (запланирована, не начата)
+
+План и обоснования — **[docs/frontend-migration.md](docs/frontend-migration.md)**, ключевые решения — `docs/adr/0001`–`0004`. Читать перед любой работой с фронтендом. Правила ниже действуют уже сейчас, чтобы не наращивать долг:
+
+- **URL никогда не склеиваются в JS** — приходят с бэкенда (в пропах, в DTO, в `links[]` пагинатора). Локаль задаётся префиксом группы маршрутов, и склейка вида `` `/solutions/${id}` `` теряет `/ru`, молча переключая локаль сессии. Такие баги уже есть в `ControlBox.jsx:63`, `Settings/ProfileForm.jsx:18`, `Settings/SettingsLayout.jsx:23,31` — не добавлять новых. Ziggy не используется, см. ADR 0002
+- **Inertia `<Link>` — только на уже переехавшие маршруты.** На Blade-страницу — обычный `<a href>` (в Mantine: `component="a"`): `<Link>` ждёт JSON с `X-Inertia`, а Blade отдаёт HTML
+- **`data-method` на Inertia-странице не работает** — `@rails/ujs` грузится только из `layouts/app.blade.php`. Ссылка отработает как GET без ошибок в консоли. Использовать `router.post()` / `router.delete()`
+- **Никаких `window`/`document`/`localStorage` на верхнем уровне модуля** — фаза 2 включает SSR. Даты форматировать на бэкенде в DTO, респонсив — только средствами Mantine (`visibleFrom`/`hiddenFrom`)
+- **`resources/js/types/generated.d.ts` генерируется**, руками не правится. После изменения DTO — `make generate-types`
 
 ### Тесты
 - Базовые классы: `tests/TestCase.php` (RefreshDatabase, WithFaker) и `tests/ControllerTestCase.php` (создаёт авторизованного User в setUp). Фабрики в `database/factories`. Тестовое окружение — SQLite `:memory:`.
