@@ -1,47 +1,27 @@
 # AGENTS.md
 
-This file provides guidance to AI coding agents (Claude Code, Codex, Cursor, Aider, Copilot, and others) working with this repository.
+`CLAUDE.md` — симлинк на этот файл. Править `AGENTS.md`.
 
 ## Project
 
-Hexlet SICP — трекер изучения книги SICP. Пользователи читают главы (иерархическое дерево), решают упражнения на Scheme/Racket и отслеживают прогресс с лидербордами. Стек: **Laravel 13 (PHP 8.3+), Inertia.js + React 19 + Vite, Blade, SQLite (local) / PostgreSQL (prod)**.
+Hexlet SICP — трекер изучения книги SICP: пользователи читают главы (иерархическое дерево), решают упражнения на Scheme/Racket, набирают баллы и попадают в лидерборды. БД — SQLite локально, PostgreSQL в проде. Фронтенд — **hybrid**: часть страниц на Blade, часть уже на Inertia + React.
 
-## Agent skills
+## Where to look
 
-### Issue tracker
-
-GitHub Issues в **`hexlet-volunteers/hexlet-sicp`** (upstream, не форк), через `gh` CLI; issue пишутся по-русски. См. `docs/agents/issue-tracker.md`.
-
-### Triage labels
-
-Пять канонических меток (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`) уже существуют в трекере под своими именами — маппинг не нужен. См. `docs/agents/triage-labels.md`.
-
-### Domain docs
-
-Single-context: `CONTEXT.md` (ещё не создан) + `docs/adr/` в корне; четыре ADR — все про фронтенд. См. `docs/agents/domain.md`.
+- **Issue, триаж, метки** → `docs/agents/issue-tracker.md`. Трекер — upstream `hexlet-volunteers/hexlet-sicp` (не форк), работа через `gh` CLI, issue пишутся по-русски; пять канонических триаж-меток разобраны в `docs/agents/triage-labels.md`.
+- **Домен, глоссарий, ADR** → `docs/agents/domain.md`.
+- **Любая работа во фронтенде** → `docs/frontend-migration.md` и `docs/adr/0001`–`0004`.
 
 ## Commands
 
-Всё запускается через Makefile. Локально (SQLite + локальный PHP):
+Всё запускается через Makefile; `make-compose.mk` — то же самое под Docker, с префиксом `compose-`. Список целей смотри в самих файлах — здесь только то, чего в них не видно:
 
-- `make setup` — полная инициализация (env, sqlite, install, key, миграции+сиды, ide-helper, сборка фронта)
-- `make start` — поднять сервер (heroku local -f Procfile.dev) на http://127.0.0.1:8000
-- `make start-app` — только PHP-сервер; `make start-frontend` — только Vite dev
-- `make test` — тесты (`php artisan test`)
-- `make lint` — lint JS + PHP; `make lint-fix` — автофикс (phpcbf для PHP, Biome для JS, prettier для blade)
-- `make db-prepare` — `migrate:fresh --force --seed`
-- `make cache-clear` — сброс config/cache/view (нужно при `CSRF token mismatch`)
-
-Тесты (phpunit, три testsuite — Unit / Feature / Exercises, по умолчанию Feature):
-
-- Один файл: `vendor/bin/phpunit tests/Feature/Http/Controllers/HomeControllerTest.php`
-- Один метод: `vendor/bin/phpunit --filter testIndex`
-- Testsuite: `vendor/bin/phpunit --testsuite Unit` (или Feature / Exercises)
-- Проверка teacher-решений: `make test-solutions` (composer exec phpunit -- --testsuite Exercises)
-
-Линтеры: `make lint-php` (phpcs, PSR-12 + Slevomat), `make lint-js` (Biome). Перед push хук `pre-push-hook` гоняет lint+analyse.
-
-Docker: команды с префиксом `compose-*` в `make-compose.mk` (например `make compose-test`, `make compose-setup`). PostgreSQL локально: `make compose-start-database` + `make db-prepare`.
+- `make cache-clear` — лечит `CSRF token mismatch`.
+- `make lint` = `lint-js lint-php`. Форматирование blade не проверяется нигде: `lint-fix` его только переписывает.
+- `make lint-fix` чинит PHP (phpcbf) и blade (prettier), но не JS. Автофикс Biome — отдельная цель `make lint-js-fix`.
+- `make analyse` — заглушка (`@echo 'fixme'`, вызов phpstan закомментирован). Поэтому pre-push-хук и CI фактически гоняют только lint и тесты.
+- Testsuite четыре — `Unit`, `Feature`, `Exercises`, `Sandbox`; по умолчанию запускается `Feature`.
+- Racket (`raco`) нужен для `Exercises` и для `CheckControllerTest` в `Feature`. Локально его может не быть — тогда падают именно они, и это не регрессия: свои изменения проверять по остальным тестам.
 
 ## Architecture
 
@@ -50,59 +30,64 @@ Docker: команды с префиксом `compose-*` в `make-compose.mk` (�
 - **Chapter** — главы SICP в дереве (`parent_id`, `path` вида "1.1.2"). Читаема только если лист (`getCanReadAttribute` — нет детей).
 - **Exercise** — упражнения, привязаны к главе. Тесты и эталонное решение лежат в Blade-стабах: `resources/views/exercise/solution_stub/{path}.blade.php` и `{path}_solution.blade.php`; тесты извлекаются после маркера `;;; END`.
 - **ExerciseMember / ChapterMember** — join-таблицы прогресса пользователя со **state machine** (`started → finished`, переход `finish()`). За завершённое упражнение начисляется 3 балла. Конфиг графов: `config/state-machine.php` (графы `chapter_member`, `completed_exercise`), пакеты iben12/laravel-statable + sebdesign/laravel-state-machine.
-- **Solution** — версии решений (scope `versioned()` — последнее на пользователя+упражнение). **Comment** — полиморфные вложенные комментарии. **Activity** — аудит через spatie/laravel-activitylog.
+- **Solution** — версии решений. Скоуп `versioned()` **не дедуплицирует** (#1681): `groupBy` включает `id`, а аргументы `distinct()` построитель запросов игнорирует, поэтому возвращаются все версии. Пока тикет открыт, последнюю версию брать явной сортировкой по `created_at`.
+- **Comment** — полиморфные вложенные комментарии. **Activity** — аудит через spatie/laravel-activitylog.
 
 ### Проверка решений (ключевой флоу)
 
-- `app/Services/SolutionChecker.php` исполняет `raco test` (Racket) в шелле, оборачивая код+тесты в sandbox-шаблон, временные файлы в `storage/solutions/`. **Требует установленного Racket** — локально `raco` может отсутствовать (тогда testsuite Exercises не пройдёт).
+- `app/Services/SolutionChecker.php` исполняет `raco test` (Racket) в шелле, оборачивая код+тесты в sandbox-шаблон; временные файлы — в `storage/solutions/`.
 - `app/Services/ExerciseService.php` оркестрирует `check()` (валидация → лог активности → переход в finished + баллы) и `createSolution()`.
 - API: `POST /api/exercises/{id}/check`, `POST /api/exercises/{id}/solutions`, `GET /api/exercises/{id}`.
 
 ### Слои
 
-- Контроллеры `app/Http/Controllers` сгруппированы по неймспейсам: `Api/`, `Admin/`, `Auth/`, `Settings/`, `User/`, `My/`, `Rating/`.
-- Сервисы `app/Services` (ExerciseService, SolutionChecker, ChapterProgressService, ActivityService, RatingCalculator).
-- DTO через spatie/laravel-data (`app/DTO`), презентеры через hemp/presenter (`app/Presenters`), политики (`app/Policies`).
-- Интеграции: Socialite (GitHub/Yandex OAuth), Sentry, knplabs/github-api, spatie/laravel-sitemap.
+- DTO — spatie/laravel-data (`app/DTO`), презентеры — hemp/presenter (`app/Presenters`), права — политики (`app/Policies`).
+- Внешние интеграции: Socialite (GitHub/Yandex OAuth), Sentry, knplabs/github-api, spatie/laravel-sitemap.
 
 ### Фронтенд (hybrid Blade + Inertia/React)
 
-- Inertia-корень: `resources/views/app.blade.php` (`@inertia`). React-вход: `resources/js/app.jsx`; компоненты в `resources/js/components`, страницы в `resources/js/pages`, Redux в `resources/js/slices`. Алиас `@` → `resources/js`.
-- Vite (`vite.config.js`) — несколько entry points (app.jsx, editor.js, hljs.js, custom.js, app.scss).
-- Локализация двухслойная: бэкенд `resources/lang/{en,ru}` + mcamara/laravel-localization (маршруты префиксованы локалью `/{locale}/...` в `routes/web.php`); фронтенд i18next (`resources/js/i18n.js`, `resources/js/locales/{en,ru}.js`).
+Приложение переезжает на Inertia + Mantine постранично (**strangler**, ADR 0001), поэтому Blade и Inertia сосуществуют — и все правила ниже следуют из этого.
 
-### Миграция фронтенда на Inertia + Mantine (запланирована, не начата)
+Устройство:
 
-План и обоснования — **[docs/frontend-migration.md](docs/frontend-migration.md)**, ключевые решения — `docs/adr/0001`–`0004`. Читать перед любой работой с фронтендом. Правила ниже действуют уже сейчас, чтобы не наращивать долг:
+- Inertia-корень — `resources/views/app.blade.php` (`@inertia`), вход React — `resources/js/app.jsx`. Компоненты в `resources/js/components`, Redux в `resources/js/slices`, алиас `@` → `resources/js`. Каталог `resources/js/pages` заведён под Inertia-страницы и пока содержит одну: `Settings/Profile/Index.jsx`.
+- Vite (`vite.config.js`) — несколько entry points: `app.jsx`, `editor.js`, `hljs.js`, `custom.js`, `app.scss`.
+- Локализация двухслойная: бэкенд — `resources/lang/{en,ru}` + mcamara/laravel-localization, фронтенд — i18next (`resources/js/i18n.js`, `resources/js/locales/{en,ru}.js`). PHP остаётся единственным источником переводов (ADR 0003).
 
-- **URL никогда не склеиваются в JS** — приходят с бэкенда (в пропах, в DTO, в `links[]` пагинатора). Локаль задаётся префиксом группы маршрутов, и склейка вида `` `/solutions/${id}` `` теряет `/ru`, молча переключая локаль сессии. Такие баги уже есть в `ControlBox.jsx:63`, `Settings/ProfileForm.jsx:18`, `Settings/SettingsLayout.jsx:23,31` — не добавлять новых. Ziggy не используется, см. ADR 0002
-- **Inertia `<Link>` — только на уже переехавшие маршруты.** На Blade-страницу — обычный `<a href>` (в Mantine: `component="a"`): `<Link>` ждёт JSON с `X-Inertia`, а Blade отдаёт HTML
-- **`data-method` на Inertia-странице не работает** — `@rails/ujs` грузится только из `layouts/app.blade.php`. Ссылка отработает как GET без ошибок в консоли. Использовать `router.post()` / `router.delete()`
-- **Никаких `window`/`document`/`localStorage` на верхнем уровне модуля** — фаза 2 включает SSR. Даты форматировать на бэкенде в DTO, респонсив — только средствами Mantine (`visibleFrom`/`hiddenFrom`)
-- **`resources/js/types/generated.d.ts` генерируется**, руками не правится. После изменения DTO — `make generate-types`
+Правила hybrid-периода:
+
+- **URL приходят с бэкенда** — из пропов, DTO, `links[]` пагинатора. Маршруты живут под **локаль-префиксом** (`/{locale}/...` в `routes/web.php`), а собранный в JS путь этот префикс теряет и молча переключает локаль сессии. Ziggy не используется (ADR 0002). Существующий долг: склейка в `components/ControlBox.jsx`, литералы `/settings/...` в `components/Settings/SettingsLayout.jsx` и `components/Settings/ProfileForm.jsx`.
+- **`<Link>` — на Inertia-маршрут, `<a href>` — на Blade-страницу** (в Mantine: `component="a"`). `<Link>` ждёт JSON с заголовком `X-Inertia`, а Blade отдаёт HTML.
+- **Мутации на Inertia-странице — через `router.post()` / `router.delete()`.** `data-method` работает только в Blade-слое: `@rails/ujs` грузится из `layouts/app.blade.php`. На Inertia-странице такая ссылка тихо отработает как GET, без ошибок в консоли.
+- **`window` / `document` / `localStorage` — внутри `useEffect` и обработчиков**, а не на верхнем уровне модуля: фаза 2 включает SSR (ADR 0004). Даты форматируются на бэкенде в DTO, респонсив — средствами Mantine (`visibleFrom` / `hiddenFrom`).
 
 ### Тесты
-- Базовые классы: `tests/TestCase.php` (RefreshDatabase, WithFaker) и `tests/ControllerTestCase.php` (создаёт авторизованного User в setUp). Фабрики в `database/factories`. Тестовое окружение — SQLite `:memory:`.
+
+- Базовые классы: `tests/TestCase.php` (`LazilyRefreshDatabase`, `WithFaker`) и `tests/ControllerTestCase.php` (создаёт авторизованного User в setUp). Фабрики в `database/factories`. Тестовое окружение — SQLite `:memory:`.
+- `TestCase::setUp` вызывает `withoutExceptionHandling()`. Чтобы проверять 403, 404 или редирект на логин, тест начинается с `withExceptionHandling()` — иначе вместо ответа прилетит исключение.
+- В `phpunit.xml` стоит `stopOnFailure="true"`: прогон обрывается на первом падении, остальные ошибки не видны. Чтобы получить полную картину — временная копия конфига **в корне репозитория** (в `/tmp` не работает: пути внутри относительные).
 
 ## Security
 
-- User Racket/Scheme code is executed inside `racket/sandbox`: `sandbox-memory-limit` 256 MB, `sandbox-eval-limits` 10 s / 128 MB per evaluation, network/subprocess/file access blocked by the default security guard. The process is additionally capped by an external `timeout 20s`.
-- **Known gap (#1936):** those limits apply only inside the evaluator. Student code is spliced into the wrapper module source (`solution_sandbox_wrapper.blade.php`), so input that closes the surrounding forms reaches the file top level, where no security guard applies. There is no OS-level isolation around the `racket` process.
-- **Known gap (#1941):** temp solution files are named from `time()` plus the exercise id — predictable and collision-prone — and are never deleted. There is no scheduled cleanup.
-- Do not add new shell execution paths without equivalent sandboxing.
-- Admin routes are guarded at the route-group level (`auth` + `can:access-admin`), not only in `AdminController::__construct`. Keep it that way: a subclass that overrides the constructor without calling `parent::__construct()` silently loses the gate — that was #1938.
+- Racket/Scheme-код пользователя исполняется в `racket/sandbox`: `sandbox-memory-limit` 256 MB, `sandbox-eval-limits` 10 с / 128 MB на вычисление; сеть, подпроцессы и доступ к файлам блокирует стандартный security guard. Сверху процесс ограничен внешним `timeout 20s`.
+- **Known gap (#1936):** эти лимиты действуют только внутри evaluator'а. Код студента вклеивается в исходник модуля-обёртки (`solution_sandbox_wrapper.blade.php`), поэтому ввод, закрывающий окружающие формы, попадает на верхний уровень файла, где security guard уже не действует. Изоляции уровня ОС вокруг процесса `racket` нет.
+- **Known gap (#1941):** временные файлы решений именуются от `time()` и id упражнения — предсказуемо и с риском коллизий — и никогда не удаляются. Плановой очистки нет.
+- Новый путь исполнения шелла проходит через тот же sandbox, что и `SolutionChecker`.
+- Админские маршруты закрыты на уровне группы маршрутов (`auth` + `can:access-admin`), а не только в `AdminController::__construct`. Так и оставлять: наследник, переопределивший конструктор без вызова `parent::__construct()`, молча теряет проверку — это был #1938.
 
 ## Conventions
 
-- PHP: PSR-12 + Slevomat (phpcs.xml). Строгие сравнения `===`, обязательные null-coalesce, **запрет `++`/`--`**, trailing commas в массивах, без mixed type hints. Запускать `make lint-php` / `make lint-fix`.
-- JS/React: Biome (biome.json) — React 19 (без prop-types и импорта React в JSX). Blade форматируется prettier через @shufo/prettier-plugin-blade.
+- PHP: PSR-12 + Slevomat (`phpcs.xml`). Строгие сравнения `===`, обязательный null-coalesce, trailing comma в массивах, явные типы вместо `mixed`. Инкремент пишется `+= 1` — `++`/`--` линтер считает ошибкой. Проверять через `make lint-php` / `make lint-fix`.
+- JS/React: Biome (`biome.json`), React 19 — без prop-types и без импорта React в JSX. Blade форматируется prettier через `@shufo/prettier-plugin-blade`.
 
-## Commit & PR conventions
+## Git, commits & PRs
 
-- **Branch naming:** `feature/<issue-number>-short-description` or `fix/<issue-number>-short-description`
-- **Commits:** Conventional Commits with issue reference — `feat: add solution cleanup (#42)` (the `#42` creates a GitHub link automatically)
-- PR title: imperative mood, under 72 characters
-- Run `make lint` and `make test` before pushing (pre-push hook enforces lint + analyse)
+- Ветки: `feature/<issue-number>-short-description` или `fix/<issue-number>-short-description`.
+- Коммиты: Conventional Commits со ссылкой на issue — `feat: add solution cleanup (#42)`; `#42` сам превращается в ссылку на GitHub.
+- Заголовок PR: повелительное наклонение, до 72 символов.
+- Перед push прогнать `make lint` и `make test`.
+- **Читать файл из другой ветки — `git show <ref>:<path>`** (или `git diff <ref> -- <path>`). `git checkout <ref> -- <path>` не читает, а пишет: перетирает рабочее дерево и индекс, а с pathspec `.` — целиком.
+- Перед git-командой, меняющей рабочее дерево, проверять `git branch --show-current` и `git status --short`: в длинной сессии ветка могла смениться.
 
 ===
 
