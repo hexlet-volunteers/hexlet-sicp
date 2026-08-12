@@ -13,6 +13,7 @@ class ExportController extends AdminController
     public function __construct(
         private readonly AnalyticsExporter $exporter
     ) {
+        parent::__construct();
     }
 
     public function index(Request $request): View

@@ -45,6 +45,6 @@ class SolutionControllerTest extends ControllerTestCase
         $this->withExceptionHandling();
         $response = $this->get(route('admin.solutions.index'));
 
-        $response->assertStatus(403);
+        $response->assertRedirect(route('login'));
     }
 }

@@ -44,7 +44,7 @@ class UserControllerTest extends ControllerTestCase
         $this->withExceptionHandling();
         $response = $this->get(route('admin.users.index'));
 
-        $response->assertStatus(403);
+        $response->assertRedirect(route('login'));
     }
 
     public function testUpdateAsAdmin(): void
@@ -105,6 +105,6 @@ class UserControllerTest extends ControllerTestCase
             'is_admin' => true,
         ]);
 
-        $response->assertStatus(403);
+        $response->assertRedirect(route('login'));
     }
 }

@@ -17,7 +17,13 @@ Route::group([
     Route::get('/oauth/yandex/callback', 'Auth\\Social\\YandexController@handleProviderCallback')->name('oauth.yandex-callback');
 
     Auth::routes(['verify' => true]);
-    Route::post('/dev-login', 'Auth\LoginController@devLogin')->name('auth.dev-login');
+
+    // Вход под администратором без пароля — только для локальной разработки.
+    // В production роут не регистрируется вовсе; сам обработчик дополнительно
+    // отдаёт 404 вне local (см. Auth\LoginController::devLogin).
+    if (!app()->environment('production')) {
+        Route::post('/dev-login', 'Auth\LoginController@devLogin')->name('auth.dev-login');
+    }
 
     Route::singleton('my', 'MyController')->only('show');
     Route::namespace('My')->prefix('my')->name('my.')->group(function (): void {
@@ -52,12 +58,19 @@ Route::group([
     Route::resource('comments', 'CommentController')->only('index', 'store', 'update', 'show', 'destroy');
     Route::resource('pages', 'PagesController')->only('show');
 
-    Route::namespace('Admin')->prefix('admin')->name('admin.')->group(function (): void {
-        Route::resource('users', 'UserController')->only('index', 'edit', 'update');
-        Route::resource('comments', 'CommentController')->only('index');
-        Route::resource('solutions', 'SolutionController')->only('index');
-        Route::resource('export', 'ExportController')->only('index', 'store');
-    });
+    // Гварды стоят на группе, а не только в конструкторе AdminController:
+    // наследник, переопределивший конструктор без вызова parent::__construct(),
+    // иначе молча остаётся без проверки прав.
+    Route::namespace('Admin')
+        ->prefix('admin')
+        ->name('admin.')
+        ->middleware(['auth', 'can:access-admin'])
+        ->group(function (): void {
+            Route::resource('users', 'UserController')->only('index', 'edit', 'update');
+            Route::resource('comments', 'CommentController')->only('index');
+            Route::resource('solutions', 'SolutionController')->only('index');
+            Route::resource('export', 'ExportController')->only('index', 'store');
+        });
 
     Route::fallback(function () {
         return response()->view('errors.404', [], 404);

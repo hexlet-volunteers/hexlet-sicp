@@ -62,9 +62,11 @@ Docker: команды с префиксом `compose-*` в `make-compose.mk` (�
 
 ## Security
 
-- User Racket/Scheme code is executed inside `racket/sandbox` with strict limits: memory 256 MB, CPU 128 s, network/subprocess/file access blocked.
-- Temp solution files are named with a random identifier and deleted after the check.
+- User Racket/Scheme code is executed inside `racket/sandbox`: `sandbox-memory-limit` 256 MB, `sandbox-eval-limits` 10 s / 128 MB per evaluation, network/subprocess/file access blocked by the default security guard. The process is additionally capped by an external `timeout 20s`.
+- **Known gap (#1936):** those limits apply only inside the evaluator. Student code is spliced into the wrapper module source (`solution_sandbox_wrapper.blade.php`), so input that closes the surrounding forms reaches the file top level, where no security guard applies. There is no OS-level isolation around the `racket` process.
+- **Known gap (#1941):** temp solution files are named from `time()` plus the exercise id — predictable and collision-prone — and are never deleted. There is no scheduled cleanup.
 - Do not add new shell execution paths without equivalent sandboxing.
+- Admin routes are guarded at the route-group level (`auth` + `can:access-admin`), not only in `AdminController::__construct`. Keep it that way: a subclass that overrides the constructor without calling `parent::__construct()` silently loses the gate — that was #1938.
 
 ## Conventions
 
