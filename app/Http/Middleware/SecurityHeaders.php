@@ -9,27 +9,26 @@ use Symfony\Component\HttpFoundation\Response;
 class SecurityHeaders
 {
     /**
-     * Handle an incoming request: force HTTPS in production and attach
-     * a baseline set of security headers to every response.
+     * Attach a baseline set of security headers to every response.
+     *
+     * `Strict-Transport-Security` is only meaningful over TLS, so it is sent
+     * on secure responses alone. Behind Heroku's TLS-terminating router the
+     * original scheme reaches the app via `X-Forwarded-Proto`, which
+     * `TrustProxies` maps onto `$request->isSecure()`.
+     *
+     * `X-XSS-Protection` is pinned to `0`: the legacy auditor can itself
+     * introduce vulnerabilities, so OWASP recommends disabling it in favour
+     * of a Content-Security-Policy.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Behind Heroku's TLS-terminating router the original scheme is
-        // exposed via X-Forwarded-Proto, which TrustProxies maps onto
-        // $request->isSecure(). Redirect plaintext requests to HTTPS.
-        if (app()->environment('production') && !$request->isSecure()) {
-            return redirect()->secure($request->getRequestUri(), 301);
-        }
-
         $response = $next($request);
 
         $headers = [
             'Referrer-Policy' => 'strict-origin-when-cross-origin',
             'Permissions-Policy' => 'camera=(), microphone=(), geolocation=()',
-            // The legacy auditor can itself introduce vulnerabilities; OWASP
-            // recommends disabling it in favour of a Content-Security-Policy.
             'X-XSS-Protection' => '0',
         ];
 
