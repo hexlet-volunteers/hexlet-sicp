@@ -14,7 +14,7 @@ services:
       cache_from:
         - type=local,src=/tmp/.docker-cache
       cache_to:
-        - type=local,dest=/tmp/.docker-cache-new,mode=max
+        - type=local,dest=/tmp/.docker-cache-new,mode=min
     volumes:
       - .:/app
     depends_on:
@@ -24,6 +24,12 @@ services:
       DB_HOST: database
       DB_DATABASE: postgres
       DB_USERNAME: postgres
+      # Загрузочные кэши composer и npm внутри бинд-маунта, а не в $HOME
+      # контейнера — иначе их не видно с хоста и нечего отдавать
+      # actions/cache. node_modules кэшировать бессмысленно: npm ci
+      # удаляет его перед установкой.
+      COMPOSER_CACHE_DIR: /app/.composer-cache
+      npm_config_cache: /app/.npm-cache
     command: ["make", "test-coverage", "analyse", "lint"]
 
   database:
