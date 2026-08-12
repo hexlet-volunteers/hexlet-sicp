@@ -73,8 +73,8 @@ Docker: команды с префиксом `compose-*` в `make-compose.mk` (�
 
 ## Commit & PR conventions
 
-- **Branch naming:** `feature/<issue-number>-short-description` or `fix/<issue-number>-short-description`
-- **Commits:** Conventional Commits with issue reference — `feat: add solution cleanup (#42)` (the `#42` creates a GitHub link automatically)
+- **Branch naming:** `feature/short-description` or `fix/short-description`. Working on an issue? Lead with its number: `feature/42-solution-cleanup`.
+- **Commits:** Conventional Commits — `feat: add solution cleanup`. Working on an issue? Append its number: `feat: add solution cleanup (#42)` — GitHub links it automatically.
 - PR title: imperative mood, under 72 characters
 - Run `make lint` and `make test` before pushing (pre-push hook enforces lint + analyse)
 
