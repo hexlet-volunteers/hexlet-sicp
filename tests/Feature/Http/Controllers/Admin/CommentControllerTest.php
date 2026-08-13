@@ -45,6 +45,6 @@ class CommentControllerTest extends ControllerTestCase
         $this->withExceptionHandling();
         $response = $this->get(route('admin.comments.index'));
 
-        $response->assertStatus(403);
+        $response->assertRedirect(route('login'));
     }
 }

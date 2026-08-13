@@ -1,0 +1,218 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:recommended",
+        ":dependencyDashboard",
+        ":semanticCommits",
+        ":semanticCommitTypeAll(chore)",
+        "group:monorepos",
+        "group:recommended"
+    ],
+    "timezone": "Europe/Moscow",
+    "schedule": ["before 07:00 on monday"],
+    "prConcurrentLimit": 5,
+    "prHourlyLimit": 2,
+    "labels": ["dependencies"],
+    "rebaseWhen": "conflicted",
+    "minimumReleaseAge": "3 days",
+    "configMigration": true,
+    "ignoreDeps": ["roave/security-advisories", "slevomat/coding-standard"],
+    "lockFileMaintenance": {
+        "enabled": true,
+        "schedule": ["before 07:00 on the first day of the month"]
+    },
+    "vulnerabilityAlerts": {
+        "enabled": true,
+        "labels": ["dependencies", "security"],
+        "schedule": ["at any time"],
+        "minimumReleaseAge": null,
+        "prCreation": "immediate"
+    },
+    "osvVulnerabilityAlerts": true,
+    "packageRules": [
+        {
+            "description": "Catch-all for JS packages that no group below claims — keeps the PR count near the weekly limit. Must stay first: later rules win",
+            "matchManagers": ["npm"],
+            "matchUpdateTypes": ["patch", "minor"],
+            "groupName": "other js"
+        },
+        {
+            "description": "Catch-all for PHP packages that no group below claims",
+            "matchManagers": ["composer"],
+            "matchUpdateTypes": ["patch", "minor"],
+            "groupName": "other php"
+        },
+        {
+            "description": "React stack",
+            "matchManagers": ["npm"],
+            "matchPackageNames": [
+                "react",
+                "react-*",
+                "@types/react*",
+                "@reduxjs/toolkit"
+            ],
+            "groupName": "react"
+        },
+        {
+            "description": "CodeMirror 6 editor",
+            "matchManagers": ["npm"],
+            "matchPackageNames": ["codemirror", "@codemirror/*", "cm6-theme-*"],
+            "groupName": "codemirror"
+        },
+        {
+            "description": "Inertia on both sides — update in a single PR",
+            "matchPackageNames": ["@inertiajs/react", "inertiajs/inertia-laravel"],
+            "groupName": "inertia"
+        },
+        {
+            "description": "Frontend build (vite sits in dependencies but is a dev tool)",
+            "matchManagers": ["npm"],
+            "matchPackageNames": [
+                "vite",
+                "@vitejs/*",
+                "laravel-vite-plugin",
+                "sass",
+                "sass-loader",
+                "resolve-url-loader"
+            ],
+            "groupName": "frontend build"
+        },
+        {
+            "description": "JS linters and formatters",
+            "matchManagers": ["npm"],
+            "matchPackageNames": [
+                "@biomejs/biome",
+                "prettier",
+                "@shufo/prettier-plugin-blade",
+                "npm-check-updates",
+                "simple-git-hooks"
+            ],
+            "groupName": "js tooling"
+        },
+        {
+            "description": "Laravel ecosystem",
+            "matchManagers": ["composer"],
+            "matchPackageNames": ["laravel/*"],
+            "groupName": "laravel"
+        },
+        {
+            "description": "Symfony components",
+            "matchManagers": ["composer"],
+            "matchPackageNames": ["symfony/*"],
+            "groupName": "symfony"
+        },
+        {
+            "description": "Spatie packages",
+            "matchManagers": ["composer"],
+            "matchPackageNames": ["spatie/*"],
+            "groupName": "spatie"
+        },
+        {
+            "description": "PHP tooling: tests, static analysis, linters",
+            "matchManagers": ["composer"],
+            "matchPackageNames": [
+                "phpunit/*",
+                "larastan/*",
+                "squizlabs/*",
+                "mockery/*",
+                "nunomaduro/*",
+                "barryvdh/*",
+                "laravel/boost"
+            ],
+            "groupName": "php tooling"
+        },
+        {
+            "description": "GitHub Actions in a single PR",
+            "matchManagers": ["github-actions"],
+            "groupName": "github-actions"
+        },
+        {
+            "description": "Postgres images in compose files",
+            "matchDatasources": ["docker"],
+            "matchPackageNames": ["postgres"],
+            "groupName": "postgres"
+        },
+        {
+            "description": "Automerge: patches of any dependency",
+            "matchUpdateTypes": ["patch", "pin", "digest"],
+            "automerge": true
+        },
+        {
+            "description": "Automerge: dev dependencies, patch and minor",
+            "matchDepTypes": ["devDependencies", "require-dev"],
+            "matchUpdateTypes": ["patch", "minor"],
+            "automerge": true
+        },
+        {
+            "description": "Automerge: build and lint tooling — effectively dev dependencies",
+            "matchPackageNames": [
+                "vite",
+                "@vitejs/*",
+                "laravel-vite-plugin",
+                "sass",
+                "sass-loader",
+                "resolve-url-loader",
+                "@biomejs/biome",
+                "prettier",
+                "@shufo/prettier-plugin-blade",
+                "npm-check-updates",
+                "simple-git-hooks"
+            ],
+            "matchUpdateTypes": ["patch", "minor"],
+            "automerge": true
+        },
+        {
+            "description": "Automerge: GitHub Actions, patch and minor",
+            "matchManagers": ["github-actions"],
+            "matchUpdateTypes": ["patch", "minor"],
+            "automerge": true
+        },
+        {
+            "description": "Base image and tool versions in Dockerfile.dev. Manual only: PHP comes from packages.sury.org, which lags behind Ubuntu releases (see the note at the top of Dockerfile.dev). Placed after the automerge rules so it overrides them",
+            "matchDatasources": ["docker", "node-version"],
+            "matchPackageNames": ["ubuntu", "php", "node"],
+            "groupName": "docker toolchain",
+            "dependencyDashboardApproval": true,
+            "automerge": false
+        },
+        {
+            "description": "The php platform constraint in composer.json is a deliberate compatibility floor, not a dependency — raising it is a conscious decision",
+            "matchManagers": ["composer"],
+            "matchDepTypes": ["require"],
+            "matchPackageNames": ["php"],
+            "dependencyDashboardApproval": true,
+            "automerge": false
+        },
+        {
+            "description": "Standalone Playwright sandbox in tests/playwright is not wired into make ci, so nothing verifies these updates — group them and never automerge",
+            "matchFileNames": ["tests/playwright/**"],
+            "groupName": "playwright",
+            "automerge": false
+        },
+        {
+            "description": "Never automerge major updates",
+            "matchUpdateTypes": ["major"],
+            "automerge": false
+        }
+    ],
+    "customManagers": [
+        {
+            "customType": "regex",
+            "description": "Node major version in Dockerfile.dev",
+            "managerFilePatterns": ["/^Dockerfile\\.dev$/"],
+            "matchStrings": ["ENV NODE_MAJOR=(?<currentValue>\\d+)"],
+            "depNameTemplate": "node",
+            "datasourceTemplate": "node-version",
+            "versioningTemplate": "node"
+        },
+        {
+            "customType": "regex",
+            "description": "PHP version in Dockerfile.dev",
+            "managerFilePatterns": ["/^Dockerfile\\.dev$/"],
+            "matchStrings": ["ENV PHP_VERSION=(?<currentValue>\\d+\\.\\d+)"],
+            "depNameTemplate": "php",
+            "datasourceTemplate": "docker",
+            "versioningTemplate": "docker"
+        }
+    ]
+}
