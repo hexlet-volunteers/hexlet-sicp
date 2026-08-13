@@ -202,16 +202,16 @@
         },
         {
             "name": "dedoc/scramble",
-            "version": "v0.13.24",
+            "version": "v0.13.39",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dedoc/scramble.git",
-                "reference": "a5a82b30c59e0b2734cdb024af3a8c32f8b1bb6c"
+                "reference": "7fcc4758d62f22d326637a578168bd5eb67a8625"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dedoc/scramble/zipball/a5a82b30c59e0b2734cdb024af3a8c32f8b1bb6c",
-                "reference": "a5a82b30c59e0b2734cdb024af3a8c32f8b1bb6c",
+                "url": "https://api.github.com/repos/dedoc/scramble/zipball/7fcc4758d62f22d326637a578168bd5eb67a8625",
+                "reference": "7fcc4758d62f22d326637a578168bd5eb67a8625",
                 "shasum": ""
             },
             "require": {
@@ -225,6 +225,7 @@
             "require-dev": {
                 "larastan/larastan": "^3.3",
                 "laravel/pint": "^v1.1.0",
+                "laravel/scout": "^10.0|^11.0",
                 "nunomaduro/collision": "^7.0|^8.0",
                 "orchestra/testbench": "^8.0|^9.0|^10.0|^11.0",
                 "pestphp/pest": "^2.34|^3.7|^4.4",
@@ -270,7 +271,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dedoc/scramble/issues",
-                "source": "https://github.com/dedoc/scramble/tree/v0.13.24"
+                "source": "https://github.com/dedoc/scramble/tree/v0.13.39"
             },
             "funding": [
                 {
@@ -278,7 +279,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-05-29T18:39:09+00:00"
+            "time": "2026-08-06T06:42:48+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -1142,21 +1143,21 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "7.15.2",
+            "version": "7.15.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "744101956d78b7c1384d0cbf379db13e859167bf"
+                "reference": "ae311b8f045ea93ce7b1c9cdb7cec06c53f944bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/744101956d78b7c1384d0cbf379db13e859167bf",
-                "reference": "744101956d78b7c1384d0cbf379db13e859167bf",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/ae311b8f045ea93ce7b1c9cdb7cec06c53f944bc",
+                "reference": "ae311b8f045ea93ce7b1c9cdb7cec06c53f944bc",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "guzzlehttp/promises": "^2.5.1",
+                "guzzlehttp/promises": "^2.5.2",
                 "guzzlehttp/psr7": "^2.13",
                 "php": "^7.2.5 || ^8.0",
                 "psr/http-client": "^1.0",
@@ -1250,7 +1251,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
-                "source": "https://github.com/guzzle/guzzle/tree/7.15.2"
+                "source": "https://github.com/guzzle/guzzle/tree/7.15.3"
             },
             "funding": [
                 {
@@ -1266,7 +1267,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-26T23:23:20+00:00"
+            "time": "2026-08-05T19:48:21+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -3401,16 +3402,16 @@
         },
         {
             "name": "mcamara/laravel-localization",
-            "version": "v2.4.0",
+            "version": "v2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mcamara/laravel-localization.git",
-                "reference": "b4b530b8d892cc8787b94059085a53b37224009b"
+                "reference": "05590594d1e871d9f2ee6ce0527441ea09fb99a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mcamara/laravel-localization/zipball/b4b530b8d892cc8787b94059085a53b37224009b",
-                "reference": "b4b530b8d892cc8787b94059085a53b37224009b",
+                "url": "https://api.github.com/repos/mcamara/laravel-localization/zipball/05590594d1e871d9f2ee6ce0527441ea09fb99a2",
+                "reference": "05590594d1e871d9f2ee6ce0527441ea09fb99a2",
                 "shasum": ""
             },
             "require": {
@@ -3461,7 +3462,7 @@
             ],
             "support": {
                 "issues": "https://github.com/mcamara/laravel-localization/issues",
-                "source": "https://github.com/mcamara/laravel-localization/tree/v2.4.0"
+                "source": "https://github.com/mcamara/laravel-localization/tree/v2.4.1"
             },
             "funding": [
                 {
@@ -3473,7 +3474,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-03-17T19:24:07+00:00"
+            "time": "2026-07-28T17:38:56+00:00"
         },
         {
             "name": "mikehaertl/php-shellcommand",
@@ -5994,23 +5995,23 @@
         },
         {
             "name": "sentry/sentry",
-            "version": "4.27.0",
+            "version": "4.30.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getsentry/sentry-php.git",
-                "reference": "1f0544cff8443ac1d25d6521487118e28381a1c2"
+                "reference": "95a26e7c946651cacd69d1ded95a8190f952a3ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getsentry/sentry-php/zipball/1f0544cff8443ac1d25d6521487118e28381a1c2",
-                "reference": "1f0544cff8443ac1d25d6521487118e28381a1c2",
+                "url": "https://api.github.com/repos/getsentry/sentry-php/zipball/95a26e7c946651cacd69d1ded95a8190f952a3ae",
+                "reference": "95a26e7c946651cacd69d1ded95a8190f952a3ae",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
                 "ext-mbstring": "*",
-                "guzzlehttp/psr7": "^1.8.4|^2.1.1",
+                "guzzlehttp/psr7": "^1.8.4|^2.1.1|^3.0.0",
                 "jean85/pretty-package-versions": "^1.5|^2.0.4",
                 "php": "^7.2|^8.0",
                 "psr/log": "^1.0|^2.0|^3.0",
@@ -6020,16 +6021,17 @@
                 "raven/raven": "*"
             },
             "require-dev": {
-                "carthage-software/mago": "^1.13.3",
+                "carthage-software/mago": "1.30.0",
                 "friendsofphp/php-cs-fixer": "^3.4",
-                "guzzlehttp/promises": "^2.0.3",
-                "guzzlehttp/psr7": "^1.8.4|^2.1.1",
+                "guzzlehttp/guzzle": "^7.0|^8.0",
+                "guzzlehttp/promises": "^2.0.3|^3.0.0",
                 "monolog/monolog": "^1.6|^2.0|^3.0",
                 "nyholm/psr7": "^1.8",
-                "open-telemetry/api": "^1.0",
-                "open-telemetry/exporter-otlp": "^1.0",
-                "open-telemetry/sdk": "^1.0",
-                "phpbench/phpbench": "^1.0",
+                "open-telemetry/api": "^1.1",
+                "open-telemetry/context": "^1.1",
+                "open-telemetry/exporter-otlp": "^1.1",
+                "open-telemetry/sdk": "^1.1",
+                "open-telemetry/sem-conv": "^1.27",
                 "phpstan/phpstan": "^1.3",
                 "phpunit/phpunit": "^8.5.52|^9.6.34",
                 "spiral/roadrunner-http": "^3.6",
@@ -6073,7 +6075,7 @@
             ],
             "support": {
                 "issues": "https://github.com/getsentry/sentry-php/issues",
-                "source": "https://github.com/getsentry/sentry-php/tree/4.27.0"
+                "source": "https://github.com/getsentry/sentry-php/tree/4.30.0"
             },
             "funding": [
                 {
@@ -6085,32 +6087,33 @@
                     "type": "custom"
                 }
             ],
-            "time": "2026-05-06T14:32:16+00:00"
+            "time": "2026-08-05T14:54:26+00:00"
         },
         {
             "name": "sentry/sentry-laravel",
-            "version": "4.25.1",
+            "version": "4.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getsentry/sentry-laravel.git",
-                "reference": "67efbdd74a752fcc1038676986b055a4df7d5084"
+                "reference": "caa0ff39805a2eb8c70c4535a1443d7421c5a5b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getsentry/sentry-laravel/zipball/67efbdd74a752fcc1038676986b055a4df7d5084",
-                "reference": "67efbdd74a752fcc1038676986b055a4df7d5084",
+                "url": "https://api.github.com/repos/getsentry/sentry-laravel/zipball/caa0ff39805a2eb8c70c4535a1443d7421c5a5b8",
+                "reference": "caa0ff39805a2eb8c70c4535a1443d7421c5a5b8",
                 "shasum": ""
             },
             "require": {
                 "illuminate/support": "^6.0 | ^7.0 | ^8.0 | ^9.0 | ^10.0 | ^11.0 | ^12.0 | ^13.0",
                 "nyholm/psr7": "^1.0",
                 "php": "^7.2 | ^8.0",
-                "sentry/sentry": "^4.23.0",
+                "sentry/sentry": "^4.28.0",
                 "symfony/psr-http-message-bridge": "^1.0 | ^2.0 | ^6.0 | ^7.0 | ^8.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.11",
                 "guzzlehttp/guzzle": "^7.2",
+                "laravel/ai": "^0.1.5",
                 "laravel/folio": "^1.1",
                 "laravel/framework": "^6.0 | ^7.0 | ^8.0 | ^9.0 | ^10.0 | ^11.0 | ^12.0 | ^13.0",
                 "laravel/octane": "^2.15",
@@ -6164,7 +6167,7 @@
             ],
             "support": {
                 "issues": "https://github.com/getsentry/sentry-laravel/issues",
-                "source": "https://github.com/getsentry/sentry-laravel/tree/4.25.1"
+                "source": "https://github.com/getsentry/sentry-laravel/tree/4.27.0"
             },
             "funding": [
                 {
@@ -6176,7 +6179,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2026-05-05T09:22:46+00:00"
+            "time": "2026-07-15T14:47:03+00:00"
         },
         {
             "name": "socialiteproviders/manager",
