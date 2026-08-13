@@ -20,9 +20,9 @@ class ExerciseHelper
     public static function getExerciseLocalePath(Exercise $exercise, ?string $locale = null): string
     {
         $locale = $locale ?? app()->getLocale();
-        $viewName = $exercise->present()->underscorePath;
+        $exerciseKey = $exercise->present()->underscorePath;
 
-        return resource_path("views/exercise/listing/{$viewName}/{$locale}");
+        return resource_path("exercises/{$exerciseKey}/{$locale}");
     }
 
     public static function getExerciseDescription(Exercise $exercise): string

@@ -10,9 +10,9 @@ class ExerciseLocaleFilesTest extends TestCase
 {
     private const LOCALES = ['en', 'ru'];
 
-    private static function listingPath(): string
+    private static function exercisesPath(): string
     {
-        return realpath(__DIR__ . '/../..') . '/resources/views/exercise/listing';
+        return realpath(__DIR__ . '/../..') . '/resources/exercises';
     }
 
     /**
@@ -22,7 +22,7 @@ class ExerciseLocaleFilesTest extends TestCase
     {
         $dataset = [];
 
-        foreach (glob(self::listingPath() . '/*/') as $exerciseDir) {
+        foreach (glob(self::exercisesPath() . '/*/') as $exerciseDir) {
             $key = basename($exerciseDir);
 
             foreach (self::LOCALES as $locale) {
