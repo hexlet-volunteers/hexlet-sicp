@@ -2,6 +2,7 @@
 
 namespace App\Presenters;
 
+use App\Helpers\ExerciseHelper;
 use App\Models\Exercise;
 use Hemp\Presenter\Presenter;
 
@@ -20,16 +21,12 @@ class ExercisePresenter extends Presenter
 
     public function getTitleAttribute(): string
     {
-        $underscoredPath = $this->underscorePath;
-
-        $titleTranslatePath = "exercises/{$underscoredPath}.title";
-
-        return __($titleTranslatePath);
+        return ExerciseHelper::getExerciseTitle($this->model);
     }
 
     public function getFullTitleAttribute(): string
     {
-        $path = $this->path;
+        $path          = $this->path;
         $exerciseTitle = $this->title;
 
         return "$path $exerciseTitle";

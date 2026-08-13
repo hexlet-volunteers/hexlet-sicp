@@ -34,12 +34,11 @@ if (!function_exists('getChapterOriginLinkForNumber')) {
     }
 }
 
-if (!function_exists('getExerciseListingViewFilepath')) {
-    function getExerciseListingViewFilepath(Exercise $exercise): string
+if (!function_exists('getExerciseDescription')) {
+    function getExerciseDescription(Exercise $exercise): string
     {
-        return ExerciseHelper::getExerciseListingViewFilepath($exercise);
+        return ExerciseHelper::getExerciseDescription($exercise);
     }
-
 }
 
 if (!function_exists('getExerciseOriginLink')) {

@@ -1,5 +1,7 @@
 @extends('layouts.app')
 @php
+  use App\Helpers\MarkdownHelper;
+
   /**
    * @var \App\Models\Exercise $exercise
    * @var bool $userCompletedExercise
@@ -58,7 +60,7 @@
                 </a>
               </sup>
             </h1>
-            @include(getExerciseListingViewFilepath($exercise))
+            {!! MarkdownHelper::text(getExerciseDescription($exercise)) !!}
             <hr>
             <div>
             @auth

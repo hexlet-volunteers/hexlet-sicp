@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Helpers\ExerciseHelper;
 use App\Models\Exercise;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
@@ -18,9 +17,6 @@ class ExerciseController extends Controller
         $testCode = $hasTests
             ? $exercise->getExerciseTests()
             : '';
-        $originalCode = $hasTests
-            ? view(ExerciseHelper::getExerciseListingViewFilepath($exercise))->render()
-            : '';
         $hasTeacherSolution = $exercise->hasTeacherSolution();
         $teacherSolutionCode = $hasTeacherSolution
             ? $exercise->getExerciseTeacherSolution()
@@ -30,7 +26,7 @@ class ExerciseController extends Controller
                 /** @var int */
                 'id' => $exercise->id,
                 'prepared_code' => '',
-                'original_code' => $originalCode,
+                'original_code' => '',
                 'test_code' => $testCode,
                 /** @var bool */
                 'has_tests' => $hasTests,
