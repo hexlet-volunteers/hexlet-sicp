@@ -18,12 +18,17 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     environment:
-      DB_CONNECTION: pgsql
       DB_HOST: database
-      DB_DATABASE: postgres
+      DB_PORT: 5432
+      DB_DATABASE: hexlet_sicp
       DB_USERNAME: postgres
+      TEST_DB_HOST: database
+      TEST_DB_PORT: 5432
+      TEST_DB_DATABASE: hexlet_sicp_test
+      TEST_DB_USERNAME: postgres
       # Загрузочные кэши composer и npm внутри бинд-маунта, а не в $HOME
       # контейнера — иначе их не видно с хоста и нечего отдавать
       # actions/cache. node_modules кэшировать бессмысленно: npm ci
@@ -36,3 +41,10 @@ services:
     image: postgres:alpine
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./database/docker:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 30

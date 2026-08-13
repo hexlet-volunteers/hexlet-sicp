@@ -9,7 +9,7 @@ console:
 deploy:
 	git push heroku main
 
-setup: env-prepare sqlite-prepare install key db-prepare ide-helper
+setup: env-prepare install key db-prepare ide-helper
 	npm run build
 
 install-app:
@@ -78,9 +78,6 @@ db-seed:
 
 env-prepare:
 	cp -n .env.example .env || true
-
-sqlite-prepare:
-	touch database/database.sqlite
 
 key:
 	php artisan key:generate

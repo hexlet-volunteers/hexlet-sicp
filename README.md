@@ -32,7 +32,7 @@ Run `composer check-platform-reqs` to check PHP deps:
 * PHP ^8.3
 * Composer
 * Node.js (v16+) & NPM (6+)
-* SQLite for local, PostgreSQL for production
+* PostgreSQL (locally you can run it from `docker compose`, see below)
 * [heroku cli](https://devcenter.heroku.com/articles/heroku-cli#download-and-install); [How to deploy Laravel on Heroku](https://ru.hexlet.io/blog/posts/kak-razvernut-prilozhenie-laravel-na-heroku) (in Russian)
 
 [What is a Version Manager?](https://guides.hexlet.io/version-managers/)
@@ -41,76 +41,42 @@ Run `composer check-platform-reqs` to check PHP deps:
 
 ### Local setup
 
-To run on the local interpreter and SQLite:
+The app runs on PostgreSQL everywhere: locally, in tests, on stage and in production.
+The simplest way to get a database is the container from `docker compose` — it listens
+on `127.0.0.1:54320` and creates both databases, the application one and the test one.
 
 ```sh
-make setup # set up the project
-make start # start server at http://127.0.0.1:8000/
-make test # run tests
+make compose-start-database # start PostgreSQL in a container
+make setup                  # set up the project
+make start                  # start server at http://127.0.0.1:8000/
+make test                   # run tests
 ```
 
-### Running on PostgreSQL (deployed in a Docker container)
+Connection settings are taken from `.env`, which `make setup` copies from `.env.example`.
+Their defaults match the container above, so nothing has to be edited.
 
-1. Install deps and prepare the config file
+To use your own PostgreSQL instead of the container, change `DB_*` and `TEST_DB_*` in `.env`
+(the default port is 5432) and create both databases by hand:
 
-    ```sh
-    make setup
-    ```
+```sh
+createdb hexlet_sicp
+createdb hexlet_sicp_test
+```
 
-2. Put your database credentials in the *.env* file
-
-    ```dotenv
-    DB_CONNECTION=pgsql
-    DB_HOST=localhost
-    DB_PORT=54320
-    DB_DATABASE=postgres
-    DB_USERNAME=postgres
-    DB_PASSWORD=secret
-    ```
-
-3. Start the database container and seed
-
-    ```sh
-    make compose-start-database
-    make db-prepare
-    ```
-
-4. Run the local server
-
-    ```sh
-    make start
-    ```
+Tests recreate the schema on every run, so they use a separate database — never point
+`TEST_DB_DATABASE` at the one you develop against.
 
 ### Setup in Docker
 
-1. Prepare the `.env` file
+```sh
+make compose-setup # build project
+make compose-start # start server at http://127.0.0.1:8000/
+make compose-bash  # start bash session inside docker container
+make test          # run tests inside docker container
+```
 
-    ```sh
-    make env-prepare
-    ```
-
-2. Put your database credentials in the `.env` file
-
-    ```dotenv
-    DB_CONNECTION=pgsql
-    DB_HOST=database
-    DB_PORT=5432
-    DB_DATABASE=postgres
-    DB_USERNAME=postgres
-    DB_PASSWORD=secret
-    ```
-
-3. Build and start the app
-
-    ```sh
-    make compose-setup # build project
-    make compose-start # start server at http://127.0.0.1:8000/
-    ```
-
-    ```sh
-    make compose-bash  # start bash session inside docker container
-    make test          # run tests inside docker container
-    ```
+Inside the containers the database host is set by `docker-compose.yml`, so the `DB_HOST`
+and `DB_PORT` values from `.env` are not used there.
 
 ### Stage deployment
 
@@ -240,19 +206,17 @@ If deployed on Heroku, set the environment variables for your deploy. To set env
 
 ### Setting up a testing database
 
-1. Create a separate Postgres database.
-   Connection settings are available in the `pgsql_test` section of `config/database.php`.
-   How to set up a test database from scratch:
+Tests always run on the `pgsql_test` connection — `phpunit.xml` selects it, no extra flags needed.
+The container from `docker compose` already has the `hexlet_sicp_test` database, so `make test`
+works right after `make setup`.
 
-    ```shell
-    sudo apt install postgresql
-    sudo -u postgres createuser --createdb $(whoami)
-    sudo -u postgres createuser hexlet_sicp_test_user
-    sudo -u postgres psql -c "ALTER USER hexlet_sicp_test_user WITH ENCRYPTED PASSWORD 'secret'"
-    createdb hexlet_sicp_test
-    ```
+For a locally installed PostgreSQL, create the database once and point `TEST_DB_*` in `.env` at it:
 
-2. Run tests on your testing database: `DB_CONNECTION=pgsql_test make test`
+```shell
+sudo apt install postgresql
+sudo -u postgres createuser --createdb $(whoami)
+createdb hexlet_sicp_test
+```
 
 ### Adding a pre-commit hook
 

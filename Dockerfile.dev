@@ -19,7 +19,7 @@ RUN apt-get update \
     git \
     libpq-dev \
     libzip-dev \
-    sqlite3 \
+    postgresql-client \
     unzip \
     zip \
     racket

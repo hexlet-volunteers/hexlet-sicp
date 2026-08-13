@@ -30,7 +30,7 @@ A: Сбросить кеш конфига `php artisan config:clear`
 * PHP ^8.3
 * Composer
 * Node.js (v16+) & NPM (6+)
-* SQLite for local, PostgreSQL for production
+* PostgreSQL (локально можно поднять из `docker compose`, см. ниже)
 * Heroku cli ([_Как развернуть приложение Laravel на Heroku_](https://ru.hexlet.io/blog/posts/kak-razvernut-prilozhenie-laravel-na-heroku))
 
 Проверить зависимости PHP можно командой `composer check-platform-reqs`
@@ -39,73 +39,42 @@ A: Сбросить кеш конфига `php artisan config:clear`
 
 ### Локальная установка
 
-Для запуска на локальном интерпретаторе и SQLite:
+Приложение везде работает на PostgreSQL: локально, в тестах, на stage и в проде.
+Проще всего поднять базу контейнером из `docker compose` — он слушает `127.0.0.1:54320`
+и заводит сразу две базы: рабочую и тестовую.
 
 ```sh
-make setup # первоначальная установка
-make start # запуск сервера http://127.0.0.1:8000/
-make test # запуск тестов
+make compose-start-database # запуск PostgreSQL в контейнере
+make setup                  # первоначальная установка
+make start                  # запуск сервера http://127.0.0.1:8000/
+make test                   # запуск тестов
 ```
 
-### Запуск с БД PostgreSQL (разворачивается в Docker-контейнере)
+Параметры подключения берутся из `.env`, который `make setup` копирует из `.env.example`.
+Значения по умолчанию совпадают с контейнером выше, поэтому править ничего не нужно.
 
-1. Установить зависимости и подготовить конфигурационный файл
+Чтобы работать со своим PostgreSQL, поменяйте в `.env` переменные `DB_*` и `TEST_DB_*`
+(порт по умолчанию — 5432) и создайте обе базы вручную:
 
-    ```sh
-    make setup
-    ```
+```sh
+createdb hexlet_sicp
+createdb hexlet_sicp_test
+```
 
-2. Указать параметры подключения к БД в файле *.env*
-
-    ```dotenv
-    DB_CONNECTION=pgsql
-    DB_HOST=localhost
-    DB_PORT=54320
-    DB_DATABASE=postgres
-    DB_USERNAME=postgres
-    DB_PASSWORD=secret
-    ```
-
-3. Запустить контейнер с БД и сгенерировать записи
-
-    ```sh
-    make compose-start-database
-    make db-prepare
-    ```
-
-4. Запустить локальный веб-сервер
-
-    ```sh
-    make start
-    ```
+Тесты пересоздают схему на каждом прогоне, поэтому база для них отдельная — не указывайте
+в `TEST_DB_DATABASE` ту, в которой ведёте разработку.
 
 ### Установка в Docker
 
-1. Подготовить файл *.env*
+```sh
+make compose-setup # собрать проект
+make compose-start # запустить сервер http://127.0.0.1:8000/
+make compose-bash  # запустить сессию bash в docker-контейнере
+make test          # запустить тесты в docker-контейнере
+```
 
-    ```sh
-    make env-prepare
-    ```
-
-2. Указать параметры подключения к БД в файле *.env*
-
-    ```dotenv
-    DB_CONNECTION=pgsql
-    DB_HOST=database
-    DB_PORT=5432
-    DB_DATABASE=postgres
-    DB_USERNAME=postgres
-    DB_PASSWORD=secret
-    ```
-
-3. Собрать и запустить приложение
-
-    ```sh
-    make compose-setup # собрать проект
-    make compose-start # запустить сервер http://127.0.0.1:8000/
-    make compose-bash  # запустить сессию bash в docker-контейнере
-    make test          # запустить тесты в docker-контейнере
-    ```
+Внутри контейнеров адрес базы задаёт `docker-compose.yml`, поэтому значения `DB_HOST`
+и `DB_PORT` из `.env` там не используются.
 
 ### Развертывание stage окружения
 
@@ -237,21 +206,20 @@ Stage приложение слушает только HTTP (порт 80). Дл�
 * В настройке "Config Vars" добавьте переменные `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` и `GITHUB_URL_REDIRECT` указав для них соответвенно значения Client ID, Client secret и User authorization callback URL
 * После чего выпольните сброс кеша конфигурации: `heroku run php artisan config:cache`
 
-### Альтернативный профиль БД для тестирования
+### База данных для тестов
 
-1. Создать отдельную тестовую базу postgres. Настройки параметров подключения можно посмотреть в секции `pgsql_test` конфигурации `config/database.php`
+Тесты всегда идут на соединении `pgsql_test` — его выбирает `phpunit.xml`, дополнительных
+флагов не нужно. В контейнере из `docker compose` база `hexlet_sicp_test` уже создана,
+поэтому `make test` работает сразу после `make setup`.
 
-    Пример создания тестовой базы "с нуля":
+Для локально установленного PostgreSQL базу нужно завести один раз и прописать её
+в переменных `TEST_DB_*` файла `.env`:
 
-    ```shell
-    sudo apt install postgresql
-    sudo -u postgres createuser --createdb $(whoami)
-    sudo -u postgres createuser hexlet_sicp_test_user
-    sudo -u postgres psql -c "ALTER USER hexlet_sicp_test_user WITH ENCRYPTED PASSWORD 'secret'"
-    createdb hexlet_sicp_test
-    ```
-
-2. Запустить тесты с альтернативным профилем `DB_CONNECTION=pgsql_test make test`
+```shell
+sudo apt install postgresql
+sudo -u postgres createuser --createdb $(whoami)
+createdb hexlet_sicp_test
+```
 
 ### Добавить пре-комит хук
 

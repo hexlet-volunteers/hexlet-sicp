@@ -12,7 +12,13 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - database
+      database:
+        condition: service_healthy
+    environment:
+      DB_HOST: database
+      DB_PORT: 5432
+      TEST_DB_HOST: database
+      TEST_DB_PORT: 5432
     command: ["make", "start-app"]
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -40,6 +46,12 @@ services:
       - 54320:5432
     volumes:
       - hexlet-sicp-pgdata:/var/lib/postgresql
+      - ./database/docker:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
 
 volumes:
   hexlet-sicp-pgdata:
