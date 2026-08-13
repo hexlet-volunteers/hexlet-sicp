@@ -82,8 +82,8 @@ Hexlet SICP — трекер изучения книги SICP: пользова�
 
 ## Git, commits & PRs
 
-- Ветки: `feature/<issue-number>-short-description` или `fix/<issue-number>-short-description`.
-- Коммиты: Conventional Commits со ссылкой на issue — `feat: add solution cleanup (#42)`; `#42` сам превращается в ссылку на GitHub.
+- Ветки: `feature/<короткое-описание>` или `fix/<короткое-описание>`. Работа идёт по issue — номер впереди: `feature/42-solution-cleanup`.
+- Коммиты: Conventional Commits — `feat: add solution cleanup`. Есть issue — номер в конце: `feat: add solution cleanup (#42)`, GitHub сам превратит его в ссылку.
 - Заголовок PR: повелительное наклонение, до 72 символов.
 - Перед push прогнать `make lint` и `make test`.
 - **Читать файл из другой ветки — `git show <ref>:<path>`** (или `git diff <ref> -- <path>`). `git checkout <ref> -- <path>` не читает, а пишет: перетирает рабочее дерево и индекс, а с pathspec `.` — целиком.
