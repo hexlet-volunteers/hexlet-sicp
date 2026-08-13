@@ -10605,16 +10605,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v8.1.0",
+            "version": "v8.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "efb42bd2c6f4f3ccfd4683583449938b5fc146b0"
+                "reference": "faabdbe998e8c5c599dceffa27aa265b185c0736"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/efb42bd2c6f4f3ccfd4683583449938b5fc146b0",
-                "reference": "efb42bd2c6f4f3ccfd4683583449938b5fc146b0",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/faabdbe998e8c5c599dceffa27aa265b185c0736",
+                "reference": "faabdbe998e8c5c599dceffa27aa265b185c0736",
                 "shasum": ""
             },
             "require": {
@@ -10657,7 +10657,7 @@
             "description": "Loads and dumps YAML files",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/yaml/tree/v8.1.0"
+                "source": "https://github.com/symfony/yaml/tree/v8.1.2"
             },
             "funding": [
                 {
@@ -10677,7 +10677,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-05-29T05:06:50+00:00"
+            "time": "2026-07-22T15:42:13+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
