@@ -4,7 +4,7 @@
 
 ## Project
 
-Hexlet SICP — трекер изучения книги SICP: пользователи читают главы (иерархическое дерево), решают упражнения на Scheme/Racket, набирают баллы и попадают в лидерборды. БД — SQLite локально, PostgreSQL в проде. Фронтенд — **hybrid**: часть страниц на Blade, часть уже на Inertia + React.
+Hexlet SICP — трекер изучения книги SICP: пользователи читают главы (иерархическое дерево), решают упражнения на Scheme/Racket, набирают баллы и попадают в лидерборды. БД — PostgreSQL везде: локально, в тестах и в проде. Фронтенд — **hybrid**: часть страниц на Blade, часть уже на Inertia + React.
 
 ## Where to look
 
@@ -63,7 +63,7 @@ Hexlet SICP — трекер изучения книги SICP: пользова�
 
 ### Тесты
 
-- Базовые классы: `tests/TestCase.php` (`LazilyRefreshDatabase`, `WithFaker`) и `tests/ControllerTestCase.php` (создаёт авторизованного User в setUp). Фабрики в `database/factories`. Тестовое окружение — SQLite `:memory:`.
+- Базовые классы: `tests/TestCase.php` (`LazilyRefreshDatabase`, `WithFaker`) и `tests/ControllerTestCase.php` (создаёт авторизованного User в setUp). Фабрики в `database/factories`. Тесты идут на соединении `pgsql_test` (`phpunit.xml`) — отдельная база PostgreSQL, переменные `TEST_DB_*`; в контейнере из `docker compose` она создаётся скриптом `database/docker/init-databases.sql`. Без запущенной базы тесты не стартуют.
 - `TestCase::setUp` вызывает `withoutExceptionHandling()`. Чтобы проверять 403, 404 или редирект на логин, тест начинается с `withExceptionHandling()` — иначе вместо ответа прилетит исключение.
 - В `phpunit.xml` стоит `stopOnFailure="true"`: прогон обрывается на первом падении, остальные ошибки не видны. Чтобы получить полную картину — временная копия конфига **в корне репозитория** (в `/tmp` не работает: пути внутри относительные).
 
