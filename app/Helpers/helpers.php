@@ -47,10 +47,3 @@ if (!function_exists('getExerciseOriginLink')) {
         return ExerciseHelper::getExerciseOriginLink($exercise);
     }
 }
-
-if (!function_exists('getExerciseDescription')) {
-    function getExerciseDescription(Exercise $exercise): string
-    {
-        return ExerciseHelper::getExerciseDescription($exercise);
-    }
-}

@@ -3,8 +3,8 @@
 namespace Tests\Feature;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Yaml;
-use Tests\TestCase;
 
 class ExerciseLocaleFilesTest extends TestCase
 {
@@ -15,7 +15,10 @@ class ExerciseLocaleFilesTest extends TestCase
         return realpath(__DIR__ . '/../..') . '/resources/views/exercise/listing';
     }
 
-    public static function dataYmlProvider(): array
+    /**
+     * @return array<string, array{string, string, string}>
+     */
+    public static function localeDirProvider(): array
     {
         $dataset = [];
 
@@ -23,22 +26,23 @@ class ExerciseLocaleFilesTest extends TestCase
             $key = basename($exerciseDir);
 
             foreach (self::LOCALES as $locale) {
-                $ymlPath = "{$exerciseDir}{$locale}/data.yml";
-                $label   = "{$key} [{$locale}]";
+                $label = "{$key} [{$locale}]";
 
-                $dataset[$label] = [$ymlPath, $key, $locale];
+                $dataset[$label] = ["{$exerciseDir}{$locale}", $key, $locale];
             }
         }
 
         return $dataset;
     }
 
-    #[DataProvider('dataYmlProvider')]
+    #[DataProvider('localeDirProvider')]
     public function testDataYmlHasRequiredFields(
-        string $ymlPath,
+        string $localeDir,
         string $key,
         string $locale
     ): void {
+        $ymlPath = "{$localeDir}/data.yml";
+
         $this->assertFileExists(
             $ymlPath,
             "Missing data.yml for exercise {$key} [{$locale}]"
@@ -55,6 +59,25 @@ class ExerciseLocaleFilesTest extends TestCase
         $this->assertNotEmpty(
             $data['name'],
             "Empty 'name' field in {$ymlPath}"
+        );
+    }
+
+    #[DataProvider('localeDirProvider')]
+    public function testDescriptionIsNotEmpty(
+        string $localeDir,
+        string $key,
+        string $locale
+    ): void {
+        $readmePath = "{$localeDir}/README.md";
+
+        $this->assertFileExists(
+            $readmePath,
+            "Missing README.md for exercise {$key} [{$locale}]"
+        );
+
+        $this->assertNotEmpty(
+            trim(file_get_contents($readmePath)),
+            "Empty README.md in {$readmePath}"
         );
     }
 }

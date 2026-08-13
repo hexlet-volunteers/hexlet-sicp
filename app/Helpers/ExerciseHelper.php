@@ -8,25 +8,28 @@ use Symfony\Component\Yaml\Yaml;
 
 class ExerciseHelper
 {
+    private const FALLBACK_LOCALE = 'en';
+
+    /**
+     * Названия упражнений из data.yml в пределах запроса: путь к файлу => название.
+     *
+     * @var array<string, string>
+     */
+    private static array $titleCache = [];
+
     public static function getExerciseLocalePath(Exercise $exercise, ?string $locale = null): string
     {
-        $locale    = $locale ?? app()->getLocale();
-
-        $viewName  = $exercise->present()->underscorePath;
+        $locale = $locale ?? app()->getLocale();
+        $viewName = $exercise->present()->underscorePath;
 
         return resource_path("views/exercise/listing/{$viewName}/{$locale}");
     }
 
     public static function getExerciseDescription(Exercise $exercise): string
     {
-        $locale = app()->getLocale();
-        $path   = self::getExerciseLocalePath($exercise, $locale) . '/README.md';
+        $path = self::resolveLocalizedFile($exercise, 'README.md');
 
-        if (!File::exists($path)) {
-            $path = self::getExerciseLocalePath($exercise, 'en') . '/README.md';
-        }
-
-        if (!File::exists($path)) {
+        if ($path === null) {
             return '';
         }
 
@@ -35,27 +38,39 @@ class ExerciseHelper
 
     public static function getExerciseTitle(Exercise $exercise): string
     {
-        $locale   = app()->getLocale();
-        $ymlPath  = self::getExerciseLocalePath($exercise, $locale) . '/data.yml';
+        $path = self::resolveLocalizedFile($exercise, 'data.yml');
 
-        if (!File::exists($ymlPath)) {
-            $ymlPath = self::getExerciseLocalePath($exercise, 'en') . '/data.yml';
-        }
-
-        if (!File::exists($ymlPath)) {
+        if ($path === null) {
             return $exercise->path;
         }
 
-        $data = Yaml::parseFile($ymlPath);
+        $name = self::$titleCache[$path] ??= (string) (Yaml::parseFile($path)['name'] ?? '');
 
-        return $data['name'] ?? $exercise->path;
+        return $name === '' ? $exercise->path : $name;
     }
 
-    public static function getExerciseOriginLink(Exercise $exercise): string
+    public static function getExerciseOriginLink(Exercise $exercise): ?string
     {
         $links = require resource_path('exercise-links.php');
-        $link  = $links[$exercise->path];
-        $link  = $links[$exercise->path];
-        return $link;
+
+        return $links[$exercise->path] ?? null;
+    }
+
+    /**
+     * Ищет файл упражнения в текущей локали, откатываясь на английскую.
+     */
+    private static function resolveLocalizedFile(Exercise $exercise, string $filename): ?string
+    {
+        $locales = array_unique([app()->getLocale(), self::FALLBACK_LOCALE]);
+
+        foreach ($locales as $locale) {
+            $path = self::getExerciseLocalePath($exercise, $locale) . "/{$filename}";
+
+            if (File::exists($path)) {
+                return $path;
+            }
+        }
+
+        return null;
     }
 }
