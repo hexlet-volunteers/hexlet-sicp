@@ -22,3 +22,9 @@ _ide_helper_models.php
 public/img/*
 composer.phar
 .phpunit.cache
+
+.composer-cache
+.npm-cache
+
+# Изолированные worktree, которые создают агенты (.claude/skills — симлинк, он отслеживается)
+.claude/worktrees/

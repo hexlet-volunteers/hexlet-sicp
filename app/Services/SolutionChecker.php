@@ -30,7 +30,10 @@ class SolutionChecker
         Storage::put($userSolutionPath, $contents);
         $solutionPath = Storage::path($userSolutionPath);
         // todo необходимо перейти на новые компоненты laravel 10
-        $command = new Command("raco test --check-stderr --quiet {$solutionPath}");
+        // Файл сам по себе является harness'ом: строит песочницу racket/sandbox,
+        // прогоняет тесты внутри неё и выставляет exit-код. Внешний `timeout` —
+        // подстраховка на случай зависания вне eval-лимита песочницы.
+        $command = new Command("timeout 20s racket {$solutionPath}");
 
         $command->execute();
 

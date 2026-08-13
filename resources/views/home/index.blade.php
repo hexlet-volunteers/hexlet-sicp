@@ -93,26 +93,26 @@
                   <a href="{{ route('users.show', $logItem->causer->id) }}">{{ $logItem->causer->name }}</a>
                 @endif
               </strong>
-              <a href="{{ $logItem->getExtraProperty('url') ?? '#' }}">{{ $logItem->created_at }}</a>
+              <a href="{{ $logItem->getProperty('url') ?? '#' }}">{{ $logItem->created_at }}</a>
             </div>
             @switch($logItem->description)
               @case('completed_exercise')
                 {{ $logItem->getDescription() }}
-                <a href="{{ route('exercises.show', $logItem->getExtraProperty('exercise_id')) }}">
+                <a href="{{ route('exercises.show', $logItem->getProperty('exercise_id')) }}">
                   {{ $logItem->subject->getFullTitle() }}
                 </a>
               @break
 
               @case('destroy_exercise')
                 {{ $logItem->getDescription() }}
-                <a href="{{ route('exercises.show', $logItem->getExtraProperty('exercise_id')) }}">
+                <a href="{{ route('exercises.show', $logItem->getProperty('exercise_id')) }}">
                   {{ $logItem->subject->getFullTitle() }}
                 </a>
               @break
 
               @case('commented')
                 {{ $logItem->getDescription() }}.
-                <a href="{{ $logItem->getExtraProperty('url') }}">
+                <a href="{{ $logItem->getProperty('url') }}">
                   <!-- FIXME: add check for null // use soft delete -->
                   {{ $logItem?->subject?->getCommentableName() }}
                 </a>
@@ -120,9 +120,9 @@
 
               @case('add_solution')
                 {{ $logItem->getDescription() }}
-                <a href="{{ route('exercises.show', $logItem->getExtraProperty('exercise_id')) }}">
-                  {{ $logItem->getExtraProperty('exercise_path') }}
-                  {{ App\Models\Exercise::findByPath($logItem->getExtraProperty('exercise_path'))->getTitle() }}
+                <a href="{{ route('exercises.show', $logItem->getProperty('exercise_id')) }}">
+                  {{ $logItem->getProperty('exercise_path') }}
+                  {{ App\Models\Exercise::findByPath($logItem->getProperty('exercise_path'))->getTitle() }}
                 </a>
               @break
 
@@ -134,9 +134,9 @@
                     {{ $logItem->getDescription() }}
                   </a>
                   <div class="collapse" id="collapseExp{{ $logItem->id }}">
-                    @if ($logItem->getExtraProperty('chapters'))
+                    @if ($logItem->getProperty('chapters'))
                       <ul>
-                        @foreach ($logItem->getExtraProperty('chapters') as $chapterPath)
+                        @foreach ($logItem->getProperty('chapters') as $chapterPath)
                           <li>
                             <a href="{{ getChapterOriginLinkForNumber($chapterPath) }}">
                               {{ App\Helpers\ChapterHelper::fullChapterName($chapterPath) }}

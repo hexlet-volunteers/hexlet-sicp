@@ -25,6 +25,8 @@ class ChapterMember extends Model
     public const string STATE_STARTED = 'started';
     public const string STATE_FINISHED = 'finished';
 
+    protected $guarded = [];
+
     protected function getGraph(): string
     {
         return 'chapter_member';

@@ -41,7 +41,7 @@ class SolutionControllerTest extends ControllerTestCase
 
         $responseBody = $response->decodeResponseJson();
 
-        $solutionId = array_get($responseBody, 'save_result.id');
+        $solutionId = data_get($responseBody, 'save_result.id');
 
         $this->assertDatabaseHas('activity_log', [
             'causer_id' => $this->user->id,

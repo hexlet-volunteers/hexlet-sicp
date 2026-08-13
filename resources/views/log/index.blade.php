@@ -30,7 +30,7 @@
                     @case('removed')
                       {{ $logItem->getDescription() }}
                       <ul>
-                        @foreach ($logItem->getExtraProperty('chapters') as $chapterPath)
+                        @foreach ($logItem->getProperty('chapters') as $chapterPath)
                           <li>
                             <a href="{{ getChapterOriginLinkForNumber($chapterPath) }}">
                               {{ App\Helpers\ChapterHelper::fullChapterName($chapterPath) }}
@@ -42,30 +42,30 @@
 
                     @case('commented')
                       {{ $logItem->getDescription() }}.
-                      <a href="{{ $logItem->getExtraProperty('url') }}">
+                      <a href="{{ $logItem->getProperty('url') }}">
                         {{ $logItem->subject->getCommentableName() }}
                       </a>
                     @break
 
                     @case('completed_exercise')
                       {{ $logItem->getDescription() }}
-                      <a href="{{ route('exercises.show', $logItem->getExtraProperty('exercise_id')) }}">
+                      <a href="{{ route('exercises.show', $logItem->getProperty('exercise_id')) }}">
                         {{ $logItem->subject->getFullTitle() }}
                       </a>
                     @break
 
                     @case('destroy_exercise')
                       {{ $logItem->getDescription() }}
-                      <a href="{{ route('exercises.show', $logItem->getExtraProperty('exercise_id')) }}">
+                      <a href="{{ route('exercises.show', $logItem->getProperty('exercise_id')) }}">
                         {{ $logItem->subject->getFullTitle() }}
                       </a>
                     @break
 
                     @case('add_solution')
                       {{ $logItem->getDescription() }}
-                      <a href="{{ route('exercises.show', $logItem->getExtraProperty('exercise_id')) }}">
-                        {{ $logItem->getExtraProperty('exercise_path') }}
-                        {{ App\Models\Exercise::findByPath($logItem->getExtraProperty('exercise_path'))->getTitle() }}
+                      <a href="{{ route('exercises.show', $logItem->getProperty('exercise_id')) }}">
+                        {{ $logItem->getProperty('exercise_path') }}
+                        {{ App\Models\Exercise::findByPath($logItem->getProperty('exercise_path'))->getTitle() }}
                       </a>
                     @break
 

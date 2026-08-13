@@ -20,6 +20,8 @@ class Chapter extends Model
 
     public string $defaultPresenter = ChapterPresenter::class;
 
+    protected $guarded = [];
+
     public const MARKABLE_COUNT = 101;
 
     public function members(): HasMany

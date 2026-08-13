@@ -25,7 +25,7 @@ class Activity extends BaseActivity
 
     public function getDescription(): string
     {
-        $itemsCount = $this->getExtraProperty('count');
+        $itemsCount = $this->getProperty('count');
         $description = $this->description;
         return trans_choice("activitylog.action_{$description}", $itemsCount, ['count' => $itemsCount]);
     }

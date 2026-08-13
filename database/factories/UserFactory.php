@@ -23,4 +23,14 @@ class UserFactory extends Factory
             'is_admin' => false,
         ];
     }
+
+    public function admin(): static
+    {
+        return $this->state(['is_admin' => true]);
+    }
+
+    public function regular(): static
+    {
+        return $this->state(['is_admin' => false]);
+    }
 }

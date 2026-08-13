@@ -21,6 +21,11 @@ class CheckResultData extends Data
     ) {
     }
 
+    public function getOutput(): string
+    {
+        return $this->output;
+    }
+
     public function getResultStatus(): string
     {
         return match ($this->exitCode) {

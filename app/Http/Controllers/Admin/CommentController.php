@@ -13,10 +13,10 @@ class CommentController extends AdminController
     public function index(Request $request): View
     {
         $comments = QueryBuilder::for(Comment::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::partial('name', 'user.name'),
                 AllowedFilter::partial('email', 'user.email'),
-            ])
+            )
             ->with(['user', 'commentable'])
             ->latest()
             ->paginate(50)

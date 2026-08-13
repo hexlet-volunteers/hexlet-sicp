@@ -20,6 +20,11 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
+        // SecurityHeaders wraps ForceHttps so that the HTTPS redirect carries
+        // the baseline headers too. Both rely on TrustProxies having resolved
+        // the original scheme first.
+        \App\Http\Middleware\SecurityHeaders::class,
+        \App\Http\Middleware\ForceHttps::class,
     ];
 
     /**

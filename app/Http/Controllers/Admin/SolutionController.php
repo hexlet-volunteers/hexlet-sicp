@@ -13,11 +13,11 @@ class SolutionController extends AdminController
     public function index(Request $request): View
     {
         $solutions = QueryBuilder::for(Solution::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('user_id'),
                 AllowedFilter::partial('name', 'user.name'),
                 AllowedFilter::partial('email', 'user.email'),
-            ])
+            )
             ->with(['user', 'exercise'])
             ->latest()
             ->paginate(50)

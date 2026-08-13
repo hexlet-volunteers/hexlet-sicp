@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -12,6 +14,6 @@
 */
 Route::namespace('Api')->name('api.')->group(function (): void {
     Route::resource('exercises', 'ExerciseController')->only(['show']);
-    Route::resource('exercises.check', 'Exercise\CheckController')->only(['store']);
+    Route::resource('exercises.check', 'Exercise\CheckController')->only(['store'])->middleware('throttle:10,1');
     Route::resource('exercises.solutions', 'Exercise\SolutionController')->only(['store']);
 });

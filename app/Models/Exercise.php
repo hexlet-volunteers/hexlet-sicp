@@ -22,6 +22,8 @@ class Exercise extends Model
 
     public string $defaultPresenter = ExercisePresenter::class;
 
+    protected $guarded = [];
+
     public static function findByPath(string $path): self
     {
         return static::wherePath($path)->firstOrFail();

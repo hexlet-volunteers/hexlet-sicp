@@ -22,6 +22,8 @@ class ExerciseMember extends Model
     public const string STATE_STARTED = 'started';
     public const string STATE_FINISHED = 'finished';
 
+    protected $guarded = [];
+
     protected $attributes = [
             'state' => self::STATE_STARTED,
         ];

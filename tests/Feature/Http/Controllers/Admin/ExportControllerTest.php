@@ -11,6 +11,15 @@ class ExportControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    private User $adminUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->adminUser = User::factory()->admin()->create();
+    }
+
     public function testExportUsersCsv(): void
     {
         Storage::disk('local')->deleteDirectory('export');
@@ -19,7 +28,7 @@ class ExportControllerTest extends TestCase
             'points' => 120,
         ]);
 
-        $response = $this->post(route('admin.export.store'), [
+        $response = $this->actingAs($this->adminUser)->post(route('admin.export.store'), [
             'type' => 'users',
         ]);
 
@@ -37,9 +46,10 @@ class ExportControllerTest extends TestCase
             str_getcsv($lines[0])
         );
 
-        $row = str_getcsv($lines[1]);
+        $rows = array_map(str_getcsv(...), array_slice($lines, 1));
+        $row = collect($rows)->firstWhere(fn(array $row): bool => (int) $row[0] === $user->id);
 
-        $this->assertEquals($user->id, (int) $row[0]);
+        $this->assertNotNull($row);
         $this->assertEquals($user->points, (int) $row[1]);
         $this->assertNotEmpty($row[2]);
     }
@@ -48,8 +58,57 @@ class ExportControllerTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $this->post(route('admin.export.store'), [
+        $this->actingAs($this->adminUser)->post(route('admin.export.store'), [
             'type' => 'invalid_type',
         ]);
+    }
+
+    public function testStoreAsGuestDenied(): void
+    {
+        $this->withExceptionHandling();
+
+        $response = $this->post(route('admin.export.store'), [
+            'type' => 'users',
+        ]);
+
+        $response->assertRedirect(route('login'));
+    }
+
+    public function testStoreAsRegularUserDenied(): void
+    {
+        $this->withExceptionHandling();
+
+        $response = $this->actingAs(User::factory()->regular()->create())
+            ->post(route('admin.export.store'), [
+                'type' => 'users',
+            ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function testIndexAsGuestDenied(): void
+    {
+        $this->withExceptionHandling();
+
+        $response = $this->get(route('admin.export.index'));
+
+        $response->assertRedirect(route('login'));
+    }
+
+    public function testIndexAsRegularUserDenied(): void
+    {
+        $this->withExceptionHandling();
+
+        $response = $this->actingAs(User::factory()->regular()->create())
+            ->get(route('admin.export.index'));
+
+        $response->assertStatus(403);
+    }
+
+    public function testIndexAsAdmin(): void
+    {
+        $response = $this->actingAs($this->adminUser)->get(route('admin.export.index'));
+
+        $response->assertOk();
     }
 }

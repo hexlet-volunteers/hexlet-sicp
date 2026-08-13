@@ -23,6 +23,9 @@
     <testsuite name="Exercises">
       <directory suffix="Test.php">./tests/Exercises</directory>
     </testsuite>
+    <testsuite name="Sandbox">
+      <directory suffix="Test.php">./tests/Sandbox</directory>
+    </testsuite>
   </testsuites>
   <php>
     <env name="APP_ENV" value="testing"/>

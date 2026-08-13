@@ -44,6 +44,9 @@ test:
 test-solutions:
 	composer exec phpunit -- --testsuite "Exercises"
 
+test-sandbox:
+	composer exec phpunit -- --testsuite "Sandbox"
+
 test-coverage:
 	XDEBUG_MODE=coverage php artisan test --coverage-clover build/logs/clover.xml
 

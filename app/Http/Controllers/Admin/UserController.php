@@ -14,10 +14,10 @@ class UserController extends AdminController
     public function index(Request $request): View
     {
         $users = QueryBuilder::for(User::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::partial('name'),
                 AllowedFilter::partial('email'),
-            ])
+            )
             ->latest()
             ->paginate(50)
             ->appends($request->query());

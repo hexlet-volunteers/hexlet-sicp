@@ -91,6 +91,7 @@ const EditorBuilder = () => {
     }
   }, [dispatch, hasTests, preparedCode, t])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: editor is created once on mount; onChange and hasTests are captured intentionally
   useEffect(() => {
     viewRef.current = new EditorView({
       state: EditorState.create({
@@ -115,6 +116,7 @@ const EditorBuilder = () => {
     }
   }, [])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: focusesCount is used as an external trigger to re-focus the editor
   useEffect(() => {
     viewRef?.current.focus()
   }, [focusesCount])

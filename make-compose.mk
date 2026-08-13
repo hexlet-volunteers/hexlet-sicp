@@ -1,4 +1,4 @@
-BUILD_ARGS:= --build-arg UID=$(shell id -u) --build-arg GID=$(shell id -u)
+BUILD_ARGS:= --build-arg UID=$(shell id -u) --build-arg GID=$(shell id -g)
 
 compose: compose-down compose-setup compose-start
 
@@ -62,7 +62,6 @@ compose-check:
 	docker compose run --rm application make check
 
 ci:
-	export BUILD_ARGS="--cache-from=type=local,src=/tmp/.docker-cache --cache-to=type=local,dest=/tmp/.docker-cache,mode=max"
 	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci build ${BUILD_ARGS}
 	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci run --rm application make setup
 	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci up --abort-on-container-exit
@@ -70,7 +69,7 @@ ci:
 
 ci-solutions:
 	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci build ${BUILD_ARGS}
-	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci run --rm application make install-app test-solutions
+	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci run --rm application make install-app test-solutions test-sandbox
 	docker compose -f docker-compose.ci.yml -p hexlet-sicp-ci down -v --remove-orphans
 
 stage-setup:

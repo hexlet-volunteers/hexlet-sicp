@@ -3,33 +3,43 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
     volumes:
       - .:/app:delegated
-      - ~/.bash_history:/home/sicp/.bash_history:delegated
+      - ~/.bash_history:/home/ubuntu/.bash_history:delegated
     ports:
       - "8000:8000"
     depends_on:
       - database
     command: ["make", "start-app"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   frontend:
     build:
       context: .
       dockerfile: Dockerfile.dev
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
     volumes:
       - .:/app:delegated
     ports:
       - 5173:5173
     command: ["make", "start-frontend"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   database:
-    image: postgres:alpine
+    image: postgres:18-alpine
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - 54320:5432
     volumes:
-      - hexlet-sicp-pgdata:/var/lib/postgresql/data
+      - hexlet-sicp-pgdata:/var/lib/postgresql
 
 volumes:
   hexlet-sicp-pgdata:

@@ -32,6 +32,8 @@ class LoginController extends Controller
 
     public function devLogin()
     {
+        abort_unless(app()->environment('local'), 404);
+
         $user = User::admins()->first();
 
         Auth::login($user);
