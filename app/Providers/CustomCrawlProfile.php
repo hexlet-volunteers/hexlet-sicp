@@ -3,21 +3,20 @@
 namespace App\Providers;
 
 use Spatie\Crawler\CrawlProfiles\CrawlProfile;
-use Psr\Http\Message\UriInterface;
 use Illuminate\Support\Str;
 
-class CustomCrawlProfile extends CrawlProfile
+class CustomCrawlProfile implements CrawlProfile
 {
-    public function shouldCrawl(UriInterface $url): bool
+    public function shouldCrawl(string $url): bool
     {
         $parsedAppUrl = parse_url(config('app.url'));
 
         $appUrlHost = $parsedAppUrl['host'];
 
-        if ($url->getHost() !== $appUrlHost) {
+        if (parse_url($url, PHP_URL_HOST) !== $appUrlHost) {
             return false;
         }
 
-        return !Str::contains($url->getPath(), config('sitemap.url_parts_to_filter'));
+        return !Str::contains(parse_url($url, PHP_URL_PATH) ?? '', config('sitemap.url_parts_to_filter'));
     }
 }
