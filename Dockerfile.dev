@@ -52,6 +52,7 @@ RUN apt-get install -y \
     php${PHP_VERSION}-dom \
     php${PHP_VERSION}-xml \
     php${PHP_VERSION}-mbstring \
+    php${PHP_VERSION}-sqlite3 \
     php${PHP_VERSION}-curl
 
 RUN curl -sL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | bash -
