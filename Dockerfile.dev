@@ -7,7 +7,7 @@ WORKDIR /app
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Moscow
 ENV PATH=node_modules/.bin:$PATH
-ENV PHP_VERSION=8.4
+ENV PHP_VERSION=8.5
 ENV NODE_MAJOR=24
 
 RUN apt-get update \
