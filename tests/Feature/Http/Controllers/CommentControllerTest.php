@@ -10,6 +10,7 @@ use Database\Seeders\ChaptersTableSeeder;
 use Database\Seeders\ExercisesTableSeeder;
 use Database\Seeders\UsersTableSeeder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\ControllerTestCase;
 
@@ -128,7 +129,7 @@ class CommentControllerTest extends ControllerTestCase
     {
         $routesGroup = $model->getTable();
         return route("{$routesGroup}.{$action}", [
-            str_singular($routesGroup) => $model,
+            Str::singular($routesGroup) => $model,
         ]);
     }
 
