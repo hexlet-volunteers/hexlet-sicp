@@ -1,6 +1,6 @@
 # Hexlet SICP
 
-[![github action status](https://github.com/Hexlet/hexlet-sicp/actions/workflows/master.yml/badge.svg)](https://github.com/Hexlet/hexlet-sicp/actions)
+[![github action status](https://github.com/Hexlet/hexlet-sicp/actions/workflows/ci.yml/badge.svg)](https://github.com/Hexlet/hexlet-sicp/actions)
 
 [![codecov](https://codecov.io/gh/Hexlet/hexlet-sicp/branch/master/graph/badge.svg)](https://codecov.io/gh/Hexlet/hexlet-sicp)
 
