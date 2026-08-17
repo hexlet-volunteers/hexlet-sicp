@@ -20,7 +20,7 @@ Hexlet SICP — трекер изучения книги SICP: пользова�
 Ключевые пакеты: Laravel 13, PHPUnit 13, larastan 3, `inertiajs/inertia-laravel` **v3** + `@inertiajs/react` v3, React 19, Vite 8, Biome 2, spatie/laravel-data 4.
 
 - `Dockerfile` (прод) и `Dockerfile.stage` начинаются с `INCLUDE+ Dockerfile.dev` (dockerfile-plus), поэтому версии PHP и Node задаются в одном месте — править `Dockerfile.dev`.
-- CI своих версий не задаёт: `pull_request.yml` просто гоняет `make ci` внутри того же образа `Dockerfile.dev`.
+- CI своих версий не задаёт: `ci.yml` просто гоняет `make ci` внутри того же образа `Dockerfile.dev`.
 - Подняв `php` в `composer.json`, обязательно прогнать `composer update --lock`: платформенные требования composer сверяет по `platform` в `composer.lock`, а не по `composer.json` (был #121). Команда меняет только `content-hash` и `platform`, версии пакетов не двигает.
 - Racket — единственная незакреплённая зависимость, и именно она гейтит testsuite `Exercises` и `CheckControllerTest`. Апгрейд базового образа может сломать их без изменений в коде.
 - `app.json` (деплой по кнопке в Heroku) живёт своей жизнью и отстал: `stack: heroku-20`, Postgres 13, `RACKET_VERSION: 7.9`. Docker-стек на него не влияет — сверяться с ним нельзя.
@@ -103,7 +103,7 @@ Hexlet SICP — трекер изучения книги SICP: пользова�
 - Базовые классы: `tests/TestCase.php` (`LazilyRefreshDatabase`, `WithFaker`) и `tests/ControllerTestCase.php` (создаёт авторизованного User в setUp). Фабрики в `database/factories`. Тесты идут на соединении `pgsql_test` (`phpunit.xml`) — отдельная база PostgreSQL, переменные `TEST_DB_*`; в контейнере из `docker compose` она создаётся скриптом `database/docker/init-databases.sql`. Без запущенной базы тесты не стартуют.
 - `TestCase::setUp` вызывает `withoutExceptionHandling()`. Чтобы проверять 403, 404 или редирект на логин, тест начинается с `withExceptionHandling()` — иначе вместо ответа прилетит исключение.
 - Гонять минимум: `php artisan test --compact --filter=<имя>` или с путём до файла. Новый тест — `php artisan make:test --phpunit <Name>`; Pest в проекте нет, все тесты — классы PHPUnit.
-- В `phpunit.xml` стоит `stopOnFailure="true"`: прогон обрывается на первом падении, остальные ошибки не видны. Чтобы получить полную картину — временная копия конфига **в корне репозитория** (в `/tmp` не работает: пути внутри относительные).
+- `stopOnFailure` и `stopOnError` из `phpunit.xml` убраны: прогон идёт до конца и показывает все падения сразу. Возвращать их не надо — на них ломается заливка результатов в Allure TestOps, которой нужен полный launch, а не обрезанный на первой ошибке (ADR-0005).
 
 ## Security
 

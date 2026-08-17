@@ -1,6 +1,11 @@
-name: CI status
+name: CI
 
+# Пуш в не-main ветки намеренно не триггерит: PR из ветки этого же репозитория
+# прогонялся бы дважды — и на push, и на pull_request.
 on:
+  pull_request:
+    branches:
+      - 'main'
   push:
     branches:
       - 'main'
@@ -35,7 +40,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Build and run CI
+      - name: Run CI
         run: |
           make ci
 
