@@ -1,4 +1,4 @@
-# NOTE: PHP 8.4 comes from packages.sury.org, which lags behind new Ubuntu releases.
+# NOTE: PHP 8.5 comes from packages.sury.org, which lags behind new Ubuntu releases.
 # Before bumping this tag, check the codename in https://packages.sury.org/php/dists/
 FROM ubuntu:26.04
 

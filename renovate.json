@@ -71,9 +71,7 @@
                 "vite",
                 "@vitejs/*",
                 "laravel-vite-plugin",
-                "sass",
-                "sass-loader",
-                "resolve-url-loader"
+                "sass"
             ],
             "groupName": "frontend build"
         },
@@ -150,8 +148,6 @@
                 "@vitejs/*",
                 "laravel-vite-plugin",
                 "sass",
-                "sass-loader",
-                "resolve-url-loader",
                 "@biomejs/biome",
                 "prettier",
                 "@shufo/prettier-plugin-blade",

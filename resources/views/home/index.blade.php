@@ -169,7 +169,7 @@
               </strong>
               <a href="{{ $comment->present()->getLink() }}">{{ $comment->created_at }}</a>
             </div>
-            <span>{!! MarkdownHelper::text(str_limit($comment->content, 80)) !!}</span>
+            <span>{!! MarkdownHelper::text(Str::limit($comment->content, 80)) !!}</span>
           </div>
         </div>
       @endforeach

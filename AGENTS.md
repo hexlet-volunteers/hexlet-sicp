@@ -6,6 +6,25 @@
 
 Hexlet SICP — трекер изучения книги SICP: пользователи читают главы (иерархическое дерево), решают упражнения на Scheme/Racket, набирают баллы и попадают в лидерборды. БД — PostgreSQL везде: локально, в тестах и в проде. Фронтенд — **hybrid**: часть страниц на Blade, часть уже на Inertia + React.
 
+## Stack (версии)
+
+**Источник истины — Docker.** Манифесты задают минимальную версию, и этот минимум держим равным образу: разошлось — подтягиваем манифест к образу, а не наоборот.
+
+| | Версия | Где задана |
+| --- | --- | --- |
+| PHP | 8.5 | `Dockerfile.dev`: `PHP_VERSION=8.5`; минимум `^8.5` в `composer.json` |
+| Node | 24 | `Dockerfile.dev`: `NODE_MAJOR=24`; минимум `>=24.x` в `package.json` `engines` |
+| PostgreSQL | 18 | `postgres:18-alpine` в `docker-compose.yml`, `.ci.yml` и `.stage.yml` |
+| Racket | не пинится | из apt базового `ubuntu:26.04` |
+
+Ключевые пакеты: Laravel 13, PHPUnit 13, larastan 3, `inertiajs/inertia-laravel` **v3** + `@inertiajs/react` v3, React 19, Vite 8, Biome 2, spatie/laravel-data 4.
+
+- `Dockerfile` (прод) и `Dockerfile.stage` начинаются с `INCLUDE+ Dockerfile.dev` (dockerfile-plus), поэтому версии PHP и Node задаются в одном месте — править `Dockerfile.dev`.
+- CI своих версий не задаёт: `pull_request.yml` просто гоняет `make ci` внутри того же образа `Dockerfile.dev`.
+- Подняв `php` в `composer.json`, обязательно прогнать `composer update --lock`: платформенные требования composer сверяет по `platform` в `composer.lock`, а не по `composer.json` (был #121). Команда меняет только `content-hash` и `platform`, версии пакетов не двигает.
+- Racket — единственная незакреплённая зависимость, и именно она гейтит testsuite `Exercises` и `CheckControllerTest`. Апгрейд базового образа может сломать их без изменений в коде.
+- `app.json` (деплой по кнопке в Heroku) живёт своей жизнью и отстал: `stack: heroku-20`, Postgres 13, `RACKET_VERSION: 7.9`. Docker-стек на него не влияет — сверяться с ним нельзя.
+
 ## Where to look
 
 - **Issue, триаж, метки** → `docs/agents/issue-tracker.md`. Трекер — upstream `hexlet-volunteers/hexlet-sicp` (не форк), работа через `gh` CLI, issue пишутся по-русски; пять канонических триаж-меток разобраны в `docs/agents/triage-labels.md`.
@@ -22,6 +41,20 @@ Hexlet SICP — трекер изучения книги SICP: пользова�
 - `make analyse` — заглушка (`@echo 'fixme'`, вызов phpstan закомментирован). Поэтому pre-push-хук и CI фактически гоняют только lint и тесты.
 - Testsuite четыре — `Unit`, `Feature`, `Exercises`, `Sandbox`; по умолчанию запускается `Feature`.
 - Racket (`raco`) нужен для `Exercises` и для `CheckControllerTest` в `Feature`. Локально его может не быть — тогда падают именно они, и это не регрессия: свои изменения проверять по остальным тестам.
+- `make start` (без Docker) поднимает приложение через **Heroku CLI** — `heroku local -f Procfile.dev`, а не `artisan serve`. Без установленного `heroku` работает только `make start-app` / `make start-frontend` или compose-цели.
+- **`php artisan route:list` в этом проекте не работает вообще:** mcamara/laravel-localization перебивает биндинг команды своим `RouteTranslationsListCommand`, а тот в `handle()` читает необъявленный аргумент `locale` → `The "locale" argument does not exist`. Флаги не помогают, `route:trans:list` не зарегистрирован. Маршруты смотреть прямо в `routes/web.php` и `routes/api.php`.
+
+## MCP
+
+`.mcp.json` описывает два сервера: `laravel-boost` (`php artisan boost:mcp`) и `allure-testops` (HTTP, `https://hexlet.testops.cloud/api/mcp` — тест-кейсы, тест-результаты по AQL, mute'ы).
+
+Токен Allure в git не лежит: заголовок собирается из `${ALLURE_TESTOPS_TOKEN}`. Чтобы сервер заработал у себя:
+
+1. Создать личный токен в TestOps: аватар → *Profile* → *API tokens*.
+2. Положить его в `env.ALLURE_TESTOPS_TOKEN` в `.claude/settings.local.json` (файл вне git) или в переменную окружения.
+3. Разрешить сервер при первом запуске — либо добавить `allure-testops` в `enabledMcpjsonServers` там же.
+
+Переменная не задана — конфиг всё равно загрузится, `${ALLURE_TESTOPS_TOKEN}` уйдёт в заголовок как есть, и сервер молча не будет работать. **`claude mcp list` это не поймает: он печатает `✔ Connected` и без токена.** Проверять вызовом инструмента, например `testops_get_project`.
 
 ## MCP
 
@@ -58,7 +91,7 @@ Hexlet SICP — трекер изучения книги SICP: пользова�
 
 ### Фронтенд (hybrid Blade + Inertia/React)
 
-Приложение переезжает на Inertia + Mantine постранично (**strangler**, ADR 0001), поэтому Blade и Inertia сосуществуют — и все правила ниже следуют из этого.
+Приложение переезжает на Inertia + Mantine постранично (**strangler**, ADR 0001), поэтому Blade и Inertia сосуществуют — и все правила ниже следуют из этого. **Mantine — цель, а не текущее состояние:** в `package.json` его пока нет, единственная Inertia-страница собрана на `react-bootstrap`. Упоминания Mantine ниже читать как «когда он появится».
 
 Устройство:
 
@@ -112,25 +145,11 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 
 ## Foundational Context
 
-This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
+This application is a Laravel application running on PHP 8.5. You are an expert with the Laravel ecosystem. Always use the APIs that match the installed major version of each package — do not assume a version.
 
-- php - 8.4
-- inertiajs/inertia-laravel (INERTIA_LARAVEL) - v2
-- laravel/framework (LARAVEL) - v13
-- laravel/prompts (PROMPTS) - v0
-- laravel/socialite (SOCIALITE) - v5
-- larastan/larastan (LARASTAN) - v3
-- laravel/boost (BOOST) - v2
-- laravel/mcp (MCP) - v0
-- phpunit/phpunit (PHPUNIT) - v12
-- @inertiajs/react (INERTIA_REACT) - v3
-- react (REACT) - v19
-- eslint (ESLINT) - v10
-- prettier (PRETTIER) - v3
-
-## Skills Activation
-
-This project has domain-specific skills available in `**/skills/**`. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck.
+Before relying on a package's API, confirm its installed version:
+- PHP packages: run `composer show --direct` to list direct dependencies with versions, or `composer show <vendor/package>` for a single package.
+- JS packages: check `package.json` for the installed versions.
 
 ## Conventions
 
@@ -185,6 +204,11 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 3. Combine words and phrases for mixed queries: `middleware "rate limit"`.
 4. Use multiple queries for OR logic: `queries=["authentication", "middleware"]`.
 
+## Project Rules
+
+- This project contains committed, area-grouped rules in `.ai/rules` when that directory exists (settled decisions, non-obvious traps, standing constraints). Framework and package guidelines that only apply to specific paths (testing, frontend, components) also live there, under `.ai/rules/boost` — this is not just recorded decisions, it is load-bearing guidance you have not seen inline. Before you enter plan mode or create/edit any file, you MUST first: open @.ai/rules/index.md (it maps file globs to rule files), read every rule file whose globs cover the path(s) in scope, and run `grep -rin 'keyword' .ai/rules` to catch what a path match alone misses. Do not write code until you have read and are following every matching rule. If `.ai/rules` does not exist, continue without it.
+- Record durable rules with `record-rule` so the next agent or teammate inherits them instead of working them out again. Pass a `glob` (e.g. `app/Http/Controllers/**`), a short `title`, and a few-line `note`. Always use `record-rule`, never your native memory or notes tool — native memory is personal and session-scoped; only `.ai/rules` is shared with the team and persists in the repo.
+
 ## Artisan
 
 - Run Artisan commands directly via the command line (e.g., `php artisan route:list`). Use `php artisan list` to discover available commands and `php artisan [command] --help` to check parameters.
@@ -230,11 +254,19 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - ALWAYS use `search-docs` tool for version-specific Inertia documentation and updated code examples.
 - IMPORTANT: Activate `inertia-react-development` when working with Inertia client-side patterns.
 
-# Inertia v2
+# Inertia v3
 
-- Use all Inertia features from v1 and v2. Check the documentation before making changes to ensure the correct approach.
-- New features: deferred props, infinite scroll, merging props, polling, prefetching, once props, flash data.
+- Use all Inertia features from v1, v2, and v3. Check the documentation before making changes to ensure the correct approach.
+- New v3 features: standalone HTTP requests (`useHttp` hook), optimistic updates with automatic rollback, layout props (`useLayoutProps` hook), instant visits, simplified SSR via `@inertiajs/vite` plugin, custom exception handling for error pages.
+- Carried over from v2: deferred props, infinite scroll, merging props, polling, prefetching, once props, flash data.
 - When using deferred props, add an empty state with a pulsing or animated skeleton.
+- Axios has been removed. Use the built-in XHR client with interceptors, or install Axios separately if needed.
+- `Inertia::lazy()` / `LazyProp` has been removed. Use `Inertia::optional()` instead.
+- Prop types (`Inertia::optional()`, `Inertia::defer()`, `Inertia::merge()`) work inside nested arrays with dot-notation paths.
+- SSR works automatically in Vite dev mode with `@inertiajs/vite` - no separate Node.js server needed during development.
+- Event renames: `invalid` is now `httpException`, `exception` is now `networkError`.
+- `router.cancel()` replaced by `router.cancelAll()`.
+- The `future` configuration namespace has been removed - all v2 future options are now always enabled.
 
 === laravel/core rules ===
 
@@ -289,79 +321,5 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 # Inertia + React
 
 - IMPORTANT: Activate `inertia-react-development` when working with Inertia React client-side patterns.
-
-=== barryvdh/laravel-debugbar rules ===
-
-## Laravel Debugbar
-
-Laravel Debugbar stores data from each request (queries, exceptions, views, routes, mail, etc.) for review via Artisan commands.
-
-### Finding Requests
-
-<code-snippet name="Find requests" lang="bash">
-
-# List recent requests (shows summary with status, duration, memory, query count)
-
-php artisan debugbar:find
-
-# Filter by URI pattern (fnmatch) and/or HTTP method
-
-php artisan debugbar:find --uri="/api/*" --method=POST
-
-# Only show requests with issues (exceptions, slow queries, duplicates, errors)
-
-php artisan debugbar:find --issues --max=50
-
-# Customize issue thresholds (defaults: --min-queries=50, --min-duration=1000, --min-duplicates=2)
-
-php artisan debugbar:find --issues --min-queries=10 --min-duration=500
-
-# Threshold options also work standalone, filtering on just that criteria
-
-php artisan debugbar:find --min-queries=20
-</code-snippet>
-
-`--issues` flags: exceptions, non-2xx status, high query count, slow queries, duplicate query groups, slow request duration, and failed queries. Issue filtering applies on top of the fetched result set — increase `--max` to scan further back.
-
-### Inspecting a Request
-
-<code-snippet name="Inspect request" lang="bash">
-
-# Summary of all collectors (available collectors depend on config)
-
-php artisan debugbar:get latest
-php artisan debugbar:get {id}
-
-# Full data for a specific collector
-
-php artisan debugbar:get {id} --collector=exceptions
-</code-snippet>
-
-Use the collector name from the summary table. Common ones by issue type:
-- **Error/500** → `exceptions` · **Slow page** → `queries`, `time` · **Auth** → `auth`, `gate` · **Cache** → `cache`
-
-### Analyzing Queries
-
-<code-snippet name="Query analysis" lang="bash">
-
-# Overview with duplicate detection and slow query flags
-
-php artisan debugbar:queries {id}
-
-# Backtrace and params for a specific statement
-
-php artisan debugbar:queries {id} --statement=N
-
-# EXPLAIN plan or re-execute a SELECT
-
-php artisan debugbar:queries {id} --statement=N --explain
-php artisan debugbar:queries {id} --statement=N --result
-</code-snippet>
-
-Duplicate queries are a strong N+1 signal. Use `--statement=N` to get the backtrace and find the origin.
-
-### Other Commands
-
-- `debugbar:clear` — Clear all stored debugbar data.
 
 </laravel-boost-guidelines>

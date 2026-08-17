@@ -38,7 +38,7 @@ services:
     command: ["make", "test-coverage", "analyse", "lint"]
 
   database:
-    image: postgres:alpine
+    image: postgres:18-alpine
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
