@@ -21,12 +21,4 @@ readonly class ChartMonth
     {
         return $this->weekCount;
     }
-
-    public function toArray(): array
-    {
-        return [
-            'month' => $this->month,
-            'weekCount' => $this->weekCount,
-        ];
-    }
 }
