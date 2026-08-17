@@ -56,18 +56,6 @@ Hexlet SICP — трекер изучения книги SICP: пользова�
 
 Переменная не задана — конфиг всё равно загрузится, `${ALLURE_TESTOPS_TOKEN}` уйдёт в заголовок как есть, и сервер молча не будет работать. **`claude mcp list` это не поймает: он печатает `✔ Connected` и без токена.** Проверять вызовом инструмента, например `testops_get_project`.
 
-## MCP
-
-`.mcp.json` описывает два сервера: `laravel-boost` (`php artisan boost:mcp`) и `allure-testops` (HTTP, `https://hexlet.testops.cloud/api/mcp` — тест-кейсы, тест-результаты по AQL, mute'ы).
-
-Токен Allure в git не лежит: заголовок собирается из `${ALLURE_TESTOPS_TOKEN}`. Чтобы сервер заработал у себя:
-
-1. Создать личный токен в TestOps: аватар → *Profile* → *API tokens*.
-2. Положить его в `env.ALLURE_TESTOPS_TOKEN` в `.claude/settings.local.json` (файл вне git) или в переменную окружения.
-3. Разрешить сервер при первом запуске — либо добавить `allure-testops` в `enabledMcpjsonServers` там же.
-
-Переменная не задана — конфиг всё равно загрузится, `${ALLURE_TESTOPS_TOKEN}` уйдёт в заголовок как есть, и сервер молча не будет работать. **`claude mcp list` это не поймает: он печатает `✔ Connected` и без токена.** Проверять вызовом инструмента, например `testops_get_project`.
-
 ## Architecture
 
 ### Домен (app/Models)
