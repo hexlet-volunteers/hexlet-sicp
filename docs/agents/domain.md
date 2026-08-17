@@ -6,7 +6,7 @@ Layout: **single-context** — one `CONTEXT.md` plus `docs/adr/` at the repo roo
 
 ## Before exploring, read these
 
-- **`CONTEXT.md`** at the repo root — **не существует пока**. Proceed silently; `/domain-modeling` создаст его, когда первый термин реально потребует определения.
+- **`CONTEXT.md`** at the repo root — глоссарий. Доменные модели там не дублируются: они описаны в разделе «Домен (app/Models)» в `AGENTS.md`. Новые термины дописывает `/domain-modeling`, когда они реально требуют определения.
 - **`docs/adr/`** — read ADRs that touch the area you're about to work in.
 - **`AGENTS.md`** at the repo root (`CLAUDE.md` — симлинк на него) — команды, архитектура, конвенции.
 
@@ -23,32 +23,11 @@ If any of these files don't exist, **proceed silently**. Don't flag their absenc
 
 Все четыре касаются фронтенда. Любая работа в `resources/js/**`, `resources/views/**`, `vite.config.js` или `app/Http/Middleware/HandleInertiaRequests.php` должна их учитывать; дополнительно есть подробный план в [docs/frontend-migration.md](../frontend-migration.md).
 
-## File structure
-
-```
-/
-├── AGENTS.md              (CLAUDE.md → симлинк)
-├── CONTEXT.md             ← ещё не создан
-├── docs/
-│   ├── frontend-migration.md
-│   ├── issue-audit-2026-08-13.md
-│   ├── adr/
-│   │   ├── 0001-frontend-strangler-migration.md
-│   │   ├── 0002-no-ziggy-urls-from-backend.md
-│   │   ├── 0003-php-owns-translations.md
-│   │   └── 0004-ssr-deferred-seo-debt.md
-│   └── agents/
-│       ├── issue-tracker.md
-│       ├── triage-labels.md
-│       └── domain.md
-├── app/  resources/  routes/  tests/
-```
-
 ## Use the glossary's vocabulary
 
 When your output names a domain concept (in an issue title, a refactor proposal, a hypothesis, a test name), use the term as defined in `CONTEXT.md`. Don't drift to synonyms the glossary explicitly avoids.
 
-`CONTEXT.md` пока нет, поэтому источник терминологии — раздел «Домен (app/Models)» в `AGENTS.md`: **Chapter**, **Exercise**, **ExerciseMember**, **ChapterMember**, **Solution**, **Comment**, **Activity**. Термины употребляются на английском даже в русскоязычных issue.
+Доменные модели живут не в `CONTEXT.md`, а в разделе «Домен (app/Models)» в `AGENTS.md`: **Chapter**, **Exercise**, **ExerciseMember**, **ChapterMember**, **Solution**, **Comment**, **Activity**. Термины употребляются на английском даже в русскоязычных issue.
 
 If the concept you need isn't in the glossary yet, that's a signal — either you're inventing language the project doesn't use (reconsider) or there's a real gap (note it for `/domain-modeling`).
 

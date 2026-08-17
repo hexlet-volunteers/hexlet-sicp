@@ -5,7 +5,7 @@
         "opencode"
     ],
     "cloud": false,
-    "guidelines": true,
+    "guidelines": false,
     "mcp": true,
     "nightwatch": false,
     "packages": [
@@ -13,7 +13,11 @@
     ],
     "sail": false,
     "skills": [
+        "infer-conventions",
         "laravel-best-practices",
-        "socialite-development"
+        "socialite-development",
+        "inertia-react-development",
+        "tailwindcss-development",
+        "debug-using-debugbar"
     ]
 }
