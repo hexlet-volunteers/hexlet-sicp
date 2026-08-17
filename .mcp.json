@@ -6,6 +6,13 @@
                 "artisan",
                 "boost:mcp"
             ]
+        },
+        "allure-testops": {
+            "type": "http",
+            "url": "https://hexlet.testops.cloud/api/mcp",
+            "headers": {
+                "Authorization": "api-token ${ALLURE_TESTOPS_TOKEN}"
+            }
         }
     }
 }
