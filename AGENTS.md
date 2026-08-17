@@ -95,6 +95,7 @@ Hexlet SICP — трекер изучения книги SICP: пользова�
 - **URL приходят с бэкенда** — из пропов, DTO, `links[]` пагинатора. Маршруты живут под **локаль-префиксом** (`/{locale}/...` в `routes/web.php`), а собранный в JS путь этот префикс теряет и молча переключает локаль сессии. Ziggy не используется (ADR 0002). Существующий долг: склейка в `components/ControlBox.jsx`, литералы `/settings/...` в `components/Settings/SettingsLayout.jsx` и `components/Settings/ProfileForm.jsx`.
 - **`<Link>` — на Inertia-маршрут, `<a href>` — на Blade-страницу** (в Mantine: `component="a"`). `<Link>` ждёт JSON с заголовком `X-Inertia`, а Blade отдаёт HTML.
 - **Мутации на Inertia-странице — через `router.post()` / `router.delete()`.** `data-method` работает только в Blade-слое: `@rails/ujs` грузится из `layouts/app.blade.php`. На Inertia-странице такая ссылка тихо отработает как GET, без ошибок в консоли.
+- **Переводы заводятся в `resources/lang/{en,ru}`, а не в словарях i18next** — PHP остаётся единственным источником (ADR 0003), фронтенд их только потребляет.
 - **`window` / `document` / `localStorage` — внутри `useEffect` и обработчиков**, а не на верхнем уровне модуля: фаза 2 включает SSR (ADR 0004). Даты форматируются на бэкенде в DTO, респонсив — средствами Mantine (`visibleFrom` / `hiddenFrom`).
 
 ### Тесты
