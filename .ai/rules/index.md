@@ -4,4 +4,5 @@ Before planning or editing, find the row whose globs match the file's path and r
 
 | Applies to | Rule file |
 | --- | --- |
-| .mcp.json | .ai/rules/general.md |
+
+Правил пока нет: файлы сюда пишет скилл `infer-conventions` через boost-инструмент `record-rule`. Общие конвенции проекта — в `AGENTS.md`.
