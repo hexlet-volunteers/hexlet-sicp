@@ -10,6 +10,14 @@ on:
     branches:
       - 'main'
 
+# Адрес TestOps и id проекта — не секреты: адрес лежит открытым текстом в
+# .mcp.json, id проекта — в docs/adr/0005 и docs/testops-manual-names.md.
+# Держать их в секретах значило бы настраивать CI на значения, которые никто
+# не может перечитать глазами. Секрет здесь только токен.
+env:
+  ALLURE_ENDPOINT: https://hexlet.testops.cloud
+  ALLURE_PROJECT_ID: "100"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -40,9 +48,33 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
+      # Заливаем только прогоны main: в отчёте для команды предмет — состояние
+      # main, а launch'и по PR разбавили бы историю каждого тест-кейса кодом,
+      # который в main не попал.
+      - name: Set up allurectl
+        if: github.event_name == 'push'
+        uses: allure-framework/setup-allurectl@v1
+        with:
+          allure-endpoint: ${{ env.ALLURE_ENDPOINT }}
+          allure-token: ${{ secrets.ALLURE_TOKEN }}
+          allure-project-id: ${{ env.ALLURE_PROJECT_ID }}
+
+      # `allurectl watch` оборачивает всю команду: он создаёт launch, ждёт
+      # завершения, забирает build/allure-results и возвращает исходный код
+      # выхода. Поэтому заливка происходит и при падении тестов, и отдельный
+      # шаг с `if: always()` не нужен.
       - name: Run CI
+        env:
+          UPLOAD_TO_TESTOPS: ${{ github.event_name == 'push' }}
+          ALLURE_TOKEN: ${{ secrets.ALLURE_TOKEN }}
         run: |
-          make ci
+          if [ "$UPLOAD_TO_TESTOPS" = "true" ]; then
+            allurectl watch \
+              --launch-name "main #${{ github.run_number }} $(git rev-parse --short HEAD)" \
+              -- make ci
+          else
+            make ci
+          fi
 
       - name: Move Docker cache
         if: always()

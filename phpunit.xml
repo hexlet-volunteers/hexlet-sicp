@@ -38,4 +38,11 @@
       <directory suffix=".php">./app</directory>
     </include>
   </source>
+  <!-- Пишет результаты в build/allure-results, откуда их забирает allurectl.
+       Параметр config не задаём намеренно: без него файл конфигурации
+       необязателен и действуют дефолты адаптера, а если параметр передать,
+       указанный файл обязан существовать. -->
+  <extensions>
+    <bootstrap class="Qameta\Allure\PHPUnit\AllureExtension"/>
+  </extensions>
 </phpunit>

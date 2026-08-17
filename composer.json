@@ -52,6 +52,7 @@
         "symfony/yaml": "^8.0.1"
     },
     "require-dev": {
+        "allure-framework/allure-phpunit": "^3.3",
         "barryvdh/laravel-debugbar": "^4.2",
         "barryvdh/laravel-ide-helper": "^3.0",
         "heroku/heroku-buildpack-php": "^294",

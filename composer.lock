@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f5f1ea8a6d9199420ab3daac12adfd52",
+    "content-hash": "5b7e5b63515963bb36244b6f1dd8bb87",
     "packages": [
         {
             "name": "brick/math",
@@ -10742,6 +10742,153 @@
     ],
     "packages-dev": [
         {
+            "name": "allure-framework/allure-php-commons",
+            "version": "v2.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/allure-framework/allure-php-commons2.git",
+                "reference": "30bfd2a2f97d4edfe37a4cf05be4a5234ad87ed4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/allure-framework/allure-php-commons2/zipball/30bfd2a2f97d4edfe37a4cf05be4a5234ad87ed4",
+                "reference": "30bfd2a2f97d4edfe37a4cf05be4a5234ad87ed4",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/annotations": "^1.12 || ^2",
+                "ext-json": "*",
+                "php": "^8",
+                "psr/log": "^1 || ^2 || ^3",
+                "ramsey/uuid": "^3 || ^4"
+            },
+            "conflict": {
+                "amphp/byte-stream": "<1.5.1"
+            },
+            "require-dev": {
+                "jetbrains/phpstorm-attributes": "^1",
+                "phpunit/phpunit": "^9.6.8",
+                "psalm/plugin-phpunit": "^0.18.4",
+                "squizlabs/php_codesniffer": "^3.7.2",
+                "vimeo/psalm": "^5.17"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Qameta\\Allure\\": "src",
+                    "Yandex\\Allure\\Adapter\\": "src/Legacy"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Dmitry Baev",
+                    "email": "baev.dm@gmail.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Edward Surov",
+                    "email": "zoohie@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Allure PHP commons",
+            "homepage": "https://allurereport.org/",
+            "keywords": [
+                "allure",
+                "commons",
+                "php",
+                "report",
+                "testing"
+            ],
+            "support": {
+                "email": "allure@qameta.io",
+                "issues": "https://github.com/allure-framework/allure-php-commons2/issues",
+                "source": "https://github.com/allure-framework/allure-php-commons"
+            },
+            "time": "2026-04-29T08:02:46+00:00"
+        },
+        {
+            "name": "allure-framework/allure-phpunit",
+            "version": "v3.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/allure-framework/allure-phpunit.git",
+                "reference": "38371ef307c11bf148a5c2a3353f49d9c39c3344"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/allure-framework/allure-phpunit/zipball/38371ef307c11bf148a5c2a3353f49d9c39c3344",
+                "reference": "38371ef307c11bf148a5c2a3353f49d9c39c3344",
+                "shasum": ""
+            },
+            "require": {
+                "allure-framework/allure-php-commons": "^2.4",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
+                "phpunit/phpunit": "^10.0.5 || ^11 || ^12.0.1 || ^13"
+            },
+            "conflict": {
+                "amphp/byte-stream": "<1.5.1",
+                "amphp/cache": "<2.0.1",
+                "amphp/dns": "<2.2.0",
+                "amphp/parser": "<1.1.1",
+                "amphp/process": "<2.0.3",
+                "amphp/socket": "<2.3.1",
+                "brianium/paratest": "<7.0.3",
+                "daverandom/libdns": "<2.1.0",
+                "ramsey/uuid": "<4.3.0",
+                "spatie/array-to-xml": "<3.3.0"
+            },
+            "require-dev": {
+                "brianium/paratest": "^7",
+                "psalm/plugin-phpunit": "^0.19.5",
+                "squizlabs/php_codesniffer": "^3.7.2",
+                "vimeo/psalm": "^6.14.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Qameta\\Allure\\PHPUnit\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Ivan Krutov",
+                    "email": "vania-pooh@yandex-team.ru",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Edward Surov",
+                    "email": "zoohie@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Allure PHPUnit integration",
+            "homepage": "https://allurereport.org/",
+            "keywords": [
+                "allure",
+                "attachments",
+                "cases",
+                "phpunit",
+                "report",
+                "steps",
+                "testing"
+            ],
+            "support": {
+                "email": "allure@qameta.io",
+                "issues": "https://github.com/allure-framework/allure-phpunit/issues",
+                "source": "https://github.com/allure-framework/allure-phpunit"
+            },
+            "time": "2026-04-29T15:20:12+00:00"
+        },
+        {
             "name": "barryvdh/laravel-debugbar",
             "version": "v4.4.1",
             "source": {
@@ -11305,6 +11452,83 @@
                 }
             ],
             "time": "2026-05-06T08:26:05+00:00"
+        },
+        {
+            "name": "doctrine/annotations",
+            "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/annotations.git",
+                "reference": "901c2ee5d26eb64ff43c47976e114bf00843acf7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/annotations/zipball/901c2ee5d26eb64ff43c47976e114bf00843acf7",
+                "reference": "901c2ee5d26eb64ff43c47976e114bf00843acf7",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/lexer": "^2 || ^3",
+                "ext-tokenizer": "*",
+                "php": "^7.2 || ^8.0",
+                "psr/cache": "^1 || ^2 || ^3"
+            },
+            "require-dev": {
+                "doctrine/cache": "^2.0",
+                "doctrine/coding-standard": "^10",
+                "phpstan/phpstan": "^1.10.28",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
+                "symfony/cache": "^5.4 || ^6.4 || ^7",
+                "vimeo/psalm": "^4.30 || ^5.14"
+            },
+            "suggest": {
+                "php": "PHP 8.0 or higher comes with attributes, a native replacement for annotations"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Doctrine\\Common\\Annotations\\": "lib/Doctrine/Common/Annotations"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com"
+                },
+                {
+                    "name": "Roman Borschel",
+                    "email": "roman@code-factory.org"
+                },
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de"
+                },
+                {
+                    "name": "Jonathan Wage",
+                    "email": "jonwage@gmail.com"
+                },
+                {
+                    "name": "Johannes Schmitt",
+                    "email": "schmittjoh@gmail.com"
+                }
+            ],
+            "description": "Docblock Annotations Parser",
+            "homepage": "https://www.doctrine-project.org/projects/annotations.html",
+            "keywords": [
+                "annotations",
+                "docblock",
+                "parser"
+            ],
+            "support": {
+                "issues": "https://github.com/doctrine/annotations/issues",
+                "source": "https://github.com/doctrine/annotations/tree/2.0.2"
+            },
+            "abandoned": true,
+            "time": "2024-09-05T10:17:24+00:00"
         },
         {
             "name": "filp/whoops",

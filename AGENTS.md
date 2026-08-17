@@ -104,6 +104,9 @@ Hexlet SICP — трекер изучения книги SICP: пользова�
 - `TestCase::setUp` вызывает `withoutExceptionHandling()`. Чтобы проверять 403, 404 или редирект на логин, тест начинается с `withExceptionHandling()` — иначе вместо ответа прилетит исключение.
 - Гонять минимум: `php artisan test --compact --filter=<имя>` или с путём до файла. Новый тест — `php artisan make:test --phpunit <Name>`; Pest в проекте нет, все тесты — классы PHPUnit.
 - `stopOnFailure` и `stopOnError` из `phpunit.xml` убраны: прогон идёт до конца и показывает все падения сразу. Возвращать их не надо — на них ломается заливка результатов в Allure TestOps, которой нужен полный launch, а не обрезанный на первой ошибке (ADR-0005).
+- Любой прогон пишет результаты в `build/allure-results` (`/build` в `.gitignore`): адаптер `allure-framework/allure-phpunit` подключён в `phpunit.xml` через `<extensions><bootstrap>`, а **не** `<extension>` — второй вариант из PHPUnit 9 в 13 не работает. Параметр `config` намеренно не задан: без него файл конфигурации необязателен и действуют дефолты, а если параметр передать, указанный файл обязан существовать.
+- Заливка в TestOps идёт **только на push в main**: `allurectl watch` оборачивает `make ci` целиком и заливает даже при падении тестов, возвращая исходный код выхода. Отдельный шаг с `if: always()` для этого не нужен. Каталог результатов лежит в bind-маунте, поэтому `docker compose down -v` в конце `make ci` его не уносит.
+- Тесты с `#[DataProvider]` попадают в TestOps **одним** тест-кейсом: у всех наборов данных один `fullName` и один `testCaseId`, различаются параметром `Data set`.
 
 ## Security
 
