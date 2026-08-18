@@ -17,6 +17,12 @@ on:
 env:
   ALLURE_ENDPOINT: https://hexlet.testops.cloud
   ALLURE_PROJECT_ID: "100"
+  # Обязателен, дефолта у allurectl нет. Дублированием пути из адаптера это
+  # только кажется: дефолт адаптера говорит, куда PHPUnit пишет результаты
+  # внутри контейнера, а ALLURE_RESULTS — откуда allurectl читает их на
+  # раннере. Без него watch создаёт launch и заливает в него ноль файлов,
+  # причём прогон остаётся зелёным.
+  ALLURE_RESULTS: build/allure-results
 
 jobs:
   build:
@@ -68,12 +74,30 @@ jobs:
           UPLOAD_TO_TESTOPS: ${{ github.event_name == 'push' }}
           ALLURE_TOKEN: ${{ secrets.ALLURE_TOKEN }}
         run: |
+          # Каталог создаём заранее: watch начинает индексировать сразу, а
+          # контейнер напишет туда первые файлы только через минуту.
+          mkdir -p "$ALLURE_RESULTS"
           if [ "$UPLOAD_TO_TESTOPS" = "true" ]; then
             allurectl watch \
               --launch-name "main #${{ github.run_number }} $(git rev-parse --short HEAD)" \
               -- make ci
           else
             make ci
+          fi
+
+      # Страж против того, что уже случилось один раз: без ALLURE_RESULTS
+      # allurectl создал launch, залил в него ноль файлов и вернул успех, так
+      # что зелёная сборка ничего не говорила о заливке. Проверяем только на
+      # зелёном прогоне: на красном отсутствие результатов может быть
+      # следствием падения сборки, и вторая ошибка лишь запутает.
+      - name: Check that test results were produced
+        if: success() && github.event_name == 'push'
+        run: |
+          count=$(find "$ALLURE_RESULTS" -name '*-result.json' | wc -l)
+          echo "файлов результатов: $count"
+          if [ "$count" -eq 0 ]; then
+            echo "::error::$ALLURE_RESULTS пуст — в TestOps уехал пустой launch"
+            exit 1
           fi
 
       - name: Move Docker cache
