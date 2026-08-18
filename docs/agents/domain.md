@@ -20,7 +20,7 @@ If any of these files don't exist, **proceed silently**. Don't flag their absenc
 | [0002](../adr/0002-no-ziggy-urls-from-backend.md) | URL приходят с бэкенда, Ziggy не используется (префикс локали) |
 | [0003](../adr/0003-php-owns-translations.md) | PHP — единственный источник переводов, i18next их только потребляет |
 | [0004](../adr/0004-ssr-deferred-seo-debt.md) | SSR отложен; публичные страницы остаются на Blade; принятый SEO-долг на трёх страницах |
-| [0005](../adr/0005-code-owns-testops-case-names.md) | код владеет именем автоматизированного тест-кейса в Allure TestOps; ручная разметка перетирается при первой заливке |
+| [0005](../adr/0005-code-owns-testops-case-names.md) | код владеет именем автоматизированного тест-кейса в Allure TestOps; ручные имена заливка **не** перетирает — см. «Наблюдённое поведение» |
 
 Первые четыре касаются фронтенда. Любая работа в `resources/js/**`, `resources/views/**`, `vite.config.js` или `app/Http/Middleware/HandleInertiaRequests.php` должна их учитывать; дополнительно есть подробный план в [docs/frontend-migration.md](../frontend-migration.md). ADR-0005 касается отчётности по тестам: работа в `phpunit.xml`, `tests/**` и `.github/workflows/**` должна его учитывать, снимок ручной разметки — в [docs/testops-manual-names.md](../testops-manual-names.md).
 
