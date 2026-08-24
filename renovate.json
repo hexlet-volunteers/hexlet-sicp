@@ -14,7 +14,7 @@
     "prHourlyLimit": 2,
     "labels": ["dependencies"],
     "rebaseWhen": "conflicted",
-    "minimumReleaseAge": "3 days",
+    "minimumReleaseAge": "14 days",
     "configMigration": true,
     "ignoreDeps": ["roave/security-advisories", "slevomat/coding-standard"],
     "lockFileMaintenance": {
