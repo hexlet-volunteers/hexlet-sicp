@@ -26,7 +26,7 @@
         "diglactic/laravel-breadcrumbs": "^10.0",
         "erusev/parsedown": "^1.7.4",
         "fakerphp/faker": "^1.24.1",
-        "guzzlehttp/guzzle": "^7.10",
+        "guzzlehttp/guzzle": "^8.0",
         "hemp/presenter": "^3.0",
         "http-interop/http-factory-guzzle": "^1.2",
         "iben12/laravel-statable": "^1.5",
