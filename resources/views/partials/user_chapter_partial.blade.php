@@ -24,7 +24,7 @@
                        'text-muted' => !$progress->isRootLevel() && !$progress->isCompleted,
                    ])
                 >
-                    {{ ChapterHelper::fullChapterName($progress->chapter->path) }}. {{ $progress->chapter->title }}
+                    {{ ChapterHelper::fullChapterName($progress->chapter->path) }}
                 </a>
             </div>
             <span @class([
@@ -61,7 +61,7 @@
                        'text-success' => !$progress->isRootLevel() && $progress->isCompleted,
                        'text-muted' => !$progress->isRootLevel() && !$progress->isCompleted,
                    ])>
-                    {{ ChapterHelper::fullChapterName($progress->chapter->path) }}. {{ $progress->chapter->title }}
+                    {{ ChapterHelper::fullChapterName($progress->chapter->path) }}
                 </a>
             </div>
 
