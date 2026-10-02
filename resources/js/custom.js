@@ -1,6 +1,8 @@
 import $ from 'jquery'
+import tabNames from './common/tabNamesMap.js'
 
-const escapeFragments = ['output', 'teacherSolution', 'editor', 'tests']
+// Этими хешами владеет React-корень упражнения, Bootstrap их не трогает
+const escapeFragments = Object.values(tabNames)
 const url = window.location.href
 if (url.indexOf('#') > 0) {
   const activeTabUrl = url.substring(url.indexOf('#') + 1)

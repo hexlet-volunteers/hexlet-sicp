@@ -8,7 +8,6 @@ import Tests from './Tests.jsx'
 import TeacherSolution from './TeacherSolution.jsx'
 import tabNames from '../common/tabNamesMap.js'
 import { changeTab } from '../slices/tabsBoxSlice.js'
-import locationMap from '../common/hashLocationMap.js'
 
 const TabsBox = () => {
   const { t } = useTranslation()
@@ -16,9 +15,9 @@ const TabsBox = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    const location = window.location.hash
-    if (locationMap[location]) {
-      dispatch(changeTab({ newActiveTab: `${locationMap[location]}` }))
+    const tabName = window.location.hash.slice(1)
+    if (Object.values(tabNames).includes(tabName)) {
+      dispatch(changeTab({ newActiveTab: tabName }))
     }
   }, [dispatch])
 
