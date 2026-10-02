@@ -5,6 +5,7 @@ namespace Tests\Feature\Controllers\Admin;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class ExportControllerTest extends TestCase
@@ -107,8 +108,17 @@ class ExportControllerTest extends TestCase
 
     public function testIndexAsAdmin(): void
     {
-        $response = $this->actingAs($this->adminUser)->get(route('admin.export.index'));
-
-        $response->assertOk();
+        $this->actingAs($this->adminUser)
+            ->get(route('admin.export.index'))
+            ->assertOk()
+            ->assertSee('<meta name="robots" content="noindex, nofollow">', false)
+            ->assertInertia(fn(Assert $page) => $page
+                ->component('Admin/Export/Index')
+                ->where('storeUrl', route('admin.export.store'))
+                ->has('types', 6)
+                ->where('types.0', ['value' => 'users', 'label' => __('admin.export.types.users')])
+                ->has('menu', 4)
+                ->where('menu.3.active', true)
+                ->where('menu.0.active', false));
     }
 }

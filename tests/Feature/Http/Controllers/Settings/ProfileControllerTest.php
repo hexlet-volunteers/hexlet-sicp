@@ -34,6 +34,7 @@ class ProfileControllerTest extends ControllerTestCase
                 ->has('translations.settings.profile')
                 ->has('nav.main')
                 ->where('colorScheme', 'light')
+                ->where('scope', 'settings.profile')
                 ->etc());
     }
 

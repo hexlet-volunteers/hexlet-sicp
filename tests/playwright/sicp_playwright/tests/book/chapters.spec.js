@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('go to the next chapter', async ({ page }) => {
   // Открываем исходную главу (принимаются цифры от 1 до 129)
-  await page.goto('https://sicp.hexlet.io/ru/chapters/23');
+  await page.goto('/chapters/23');
 
   // Делаем скриншот начальной страницы
   await page.screenshot({ path: './screenshots/next_chapter_start.png', fullPage: true });
@@ -11,7 +11,7 @@ test('go to the next chapter', async ({ page }) => {
   await page.getByRole('link', { name: 'Следующая глава' }).click();
 
   // Проверяем, что перешли на верную страницу (URL в chapters +1)
-  await expect(page).toHaveURL('https://sicp.hexlet.io/ru/chapters/24');
+  await expect(page).toHaveURL(/\/chapters\/24$/);
 
   // Делаем скриншот конечной страницы
   await page.screenshot({ path: './screenshots/next_chapter_end_screenshot.png', fullPage: true });
@@ -19,7 +19,7 @@ test('go to the next chapter', async ({ page }) => {
 
 test('go to the previous chapter', async ({ page }) => {
   // Открываем исходную главу (принимаются цифры от 1 до 129)
-  await page.goto('https://sicp.hexlet.io/ru/chapters/23');
+  await page.goto('/chapters/23');
 
   // Делаем скриншот начальной страницы
   await page.screenshot({ path: './screenshots/previous_chapter_start.png', fullPage: true });
@@ -28,7 +28,7 @@ test('go to the previous chapter', async ({ page }) => {
   await page.getByRole('link', { name: 'Предыдущая глава' }).click();
 
   // Проверяем, что перешли на верную страницу (URL в chapters -1)
-  await expect(page).toHaveURL('https://sicp.hexlet.io/ru/chapters/22');
+  await expect(page).toHaveURL(/\/chapters\/22$/);
 
   // Делаем скриншот конечной страницы
   await page.screenshot({ path: './screenshots/previous_chapter_end.png', fullPage: true });
@@ -37,7 +37,7 @@ test('go to the previous chapter', async ({ page }) => {
 test('link to the chapter is available', async ({ page }) => {
 
   // 1. Главная
-  await page.goto('https://sicp.hexlet.io/ru');
+  await page.goto('/');
 
   // 2. Переход к оглавлению
   await page.getByRole('link', { name: 'Оглавление' }).click();
@@ -72,7 +72,7 @@ test('link to the chapter is available', async ({ page }) => {
 
 // ВНИМАНИЕ!!! Перед запуском либо поменяй главу, либо удали и заново создай юзера
 test('read the chapter', async ({ page }) => {
-  await page.goto('https://sicp.hexlet.io/ru');
+  await page.goto('/');
 
   // Выбираем главу
   await page.getByRole('link', { name: 'Оглавление' }).click();

@@ -32,7 +32,7 @@ class ProfileController extends Controller
             menu: $navigation->settings(),
         );
 
-        return $this->inertia($page->toArray())
+        return $this->inertia($page->toArray(), scope: 'settings.profile')
             ->withViewData(['robots' => 'noindex, nofollow']);
     }
 

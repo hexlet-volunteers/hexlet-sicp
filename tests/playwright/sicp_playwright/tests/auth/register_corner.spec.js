@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { isProduction } from '../stand';
 
 test('email без локальной части', async ({ page }) => {
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить невалидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('@mail.ru');
@@ -21,7 +22,7 @@ test('email без локальной части', async ({ page }) => {
 
 test('email без доменной части', async ({ page }) => {
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить невалидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('mail@');
@@ -40,7 +41,7 @@ test('email без доменной части', async ({ page }) => {
 
 test('email с двойным @', async ({ page }) => {
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить невалидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('ma@il@mail.ru');
@@ -59,7 +60,7 @@ test('email с двойным @', async ({ page }) => {
 
 test('email с точкой в начале локальной части', async ({ page }) => {
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить невалидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('.mail@mail.ru');
@@ -78,7 +79,7 @@ test('email с точкой в начале локальной части', asyn
 
 test('email с точкой в конце локальной части', async ({ page }) => {
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить невалидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('mail.@mail.ru');
@@ -97,7 +98,7 @@ test('email с точкой в конце локальной части', async 
 
 test('email с двумя точками подряд в локальной части', async ({ page }) => {
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить невалидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('ma..il@mail.ru');
@@ -116,7 +117,7 @@ test('email с двумя точками подряд в локальной ча
 
 test('email с двумя точками подряд в доменной части', async ({ page }) => {
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить невалидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('mail@ma..il.ru');
@@ -133,9 +134,11 @@ test('email с двумя точками подряд в доменной час
   await page.screenshot({ path: './screenshots/invalid-email-7.png', fullPage: true });
 });
 
-test('email с допустимым спецсимволом', async ({ page }) => {
+test('email с допустимым спецсимволом', async ({ page, baseURL }) => {
+  test.skip(isProduction(baseURL), 'заводит или удаляет аккаунт — не в продакшене');
+
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить (не)валидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('ma+il@mail.ru');
@@ -154,7 +157,7 @@ test('email с допустимым спецсимволом', async ({ page }) 
 
 test('email с недопустимыми спецсимволами', async ({ page }) => {
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить невалидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('ma()il@mail.ru');
@@ -173,7 +176,7 @@ test('email с недопустимыми спецсимволами', async ({ 
 
 test('email без точки в домене', async ({ page }) => {
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить невалидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('mail@mail');
@@ -192,7 +195,7 @@ test('email без точки в домене', async ({ page }) => {
 
 test('очень длинный email (100 локаль, 100 домен и .ru', async ({ page }) => {
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить невалидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('bfdhsiuwqhiurdhidufshhlfdxhfhkcxvhjbhzxbkhjvchdfblhlisadfvlzdfaisdlfbgldkzufgladfukighladkfuigldzfug@bfdhsiuwqhiurdhidufshhlfdxhfhkcxvhjbhzxbkhjvchdfblhlisadfvlzdfaisdlfbgldkzufgladfukighladkfuigldzfug.ru');
@@ -211,7 +214,7 @@ test('очень длинный email (100 локаль, 100 домен и .ru',
 
 test('email с кириллицей', async ({ page }) => {
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить невалидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('почта@почта.рф');
@@ -230,7 +233,7 @@ test('email с кириллицей', async ({ page }) => {
 
 test('email с пробелом', async ({ page }) => {
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить невалидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('ma il@mail.ru');
@@ -247,9 +250,11 @@ test('email с пробелом', async ({ page }) => {
   await page.screenshot({ path: './screenshots/invalid-email-13.png', fullPage: true });
 });
 
-test('email с пробелом в начале и в конце', async ({ page }) => {
+test('email с пробелом в начале и в конце', async ({ page, baseURL }) => {
+  test.skip(isProduction(baseURL), 'заводит или удаляет аккаунт — не в продакшене');
+
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить (не)валидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill(' mail@mail.ru ');
@@ -268,7 +273,7 @@ test('email с пробелом в начале и в конце', async ({ page
 
 test('пустая строка', async ({ page }) => {
   // Регистрация
-  await page.goto('https://sicp.hexlet.io/ru/register');
+  await page.goto('/register');
 
   // Заполнить невалидными данными
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('');
@@ -285,8 +290,10 @@ test('пустая строка', async ({ page }) => {
   await page.screenshot({ path: './screenshots/invalid-email-15.png', fullPage: true });
 });
 
-test('Удалить пользователя с + почтой', async ({ page }) => {
-  await page.goto('https://sicp.hexlet.io/ru');
+test('Удалить пользователя с + почтой', async ({ page, baseURL }) => {
+  test.skip(isProduction(baseURL), 'заводит или удаляет аккаунт — не в продакшене');
+
+  await page.goto('/');
 
   await page.getByRole('link', { name: 'Вход' }).click();
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('ma+il@mail.ru');
@@ -311,8 +318,10 @@ test('Удалить пользователя с + почтой', async ({ page 
   await expect(page.getByText('Ваш аккаунт успешно удален!')).toBeVisible();
 });
 
-test('Удалить пользователя с пробелами в почте', async ({ page }) => {
-  await page.goto('https://sicp.hexlet.io/ru');
+test('Удалить пользователя с пробелами в почте', async ({ page, baseURL }) => {
+  test.skip(isProduction(baseURL), 'заводит или удаляет аккаунт — не в продакшене');
+
+  await page.goto('/');
 
   await page.getByRole('link', { name: 'Вход' }).click();
   await page.getByRole('textbox', { name: 'Электронная почта' }).fill('mail@mail.ru');

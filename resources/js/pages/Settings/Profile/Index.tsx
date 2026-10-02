@@ -2,6 +2,7 @@ import { Head, useForm } from '@inertiajs/react'
 import { Anchor, Button, Card, Grid, Image, Stack, TextInput, Title } from '@mantine/core'
 import { useTranslation } from 'react-i18next'
 import SettingsLayout from '@/layouts/SettingsLayout'
+import { useTView } from '@/lib/scope'
 
 export default function ProfileIndex({
   name,
@@ -12,6 +13,7 @@ export default function ProfileIndex({
   menu,
 }: App.DTO.Settings.ProfilePageData) {
   const { t } = useTranslation()
+  const tView = useTView()
   const form = useForm({ name, github_name: github_name ?? '' })
 
   const submit = (e: React.FormEvent) => {
@@ -31,14 +33,14 @@ export default function ProfileIndex({
             <form onSubmit={submit}>
               <Stack>
                 <TextInput
-                  label={t('settings.profile.name')}
+                  label={tView('.name')}
                   name="name"
                   value={form.data.name}
                   onChange={(e) => form.setData('name', e.currentTarget.value)}
                   error={form.errors.name}
                 />
                 <TextInput
-                  label={t('settings.profile.github_name')}
+                  label={tView('.github_name')}
                   name="github_name"
                   value={form.data.github_name}
                   onChange={(e) => form.setData('github_name', e.currentTarget.value)}

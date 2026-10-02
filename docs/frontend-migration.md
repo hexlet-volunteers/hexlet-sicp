@@ -109,7 +109,7 @@ solution/index, solution/show
 
 Форма пропа списковой страницы: `{ items: XData[], pagination: PaginationData }`.
 
-**`->withQueryString()` в контроллере, всегда** — иначе вторая страница теряет фильтр. Сейчас `Admin\{User,Comment,Solution}Controller` делают `->appends($request->query())`; `ActivityController`, `CommentController`, `My\SolutionController` — голый `paginate()`; `SolutionController` вызывает `withQueryString()` **во вьюхе** (`solution/index.blade.php:72`).
+**`->withQueryString()` в контроллере, всегда** — иначе вторая страница теряет фильтр. Сейчас `Admin\{Comment,Solution}Controller` делают `->appends($request->query())`; `CommentController`, `My\SolutionController` — голый `paginate()`; `SolutionController` вызывает `withQueryString()` **во вьюхе** (`solution/index.blade.php:72`).
 
 Все 7 `paginate()` и все 7 `->links()` в проекте — внутри фазы 1. Значит `Paginator::useBootstrap()` (`AppServiceProvider.php:61`) становится мёртвым ровно по её завершении и удаляется последним PR. **Раньше не трогать** — оставшиеся Blade-пагинаторы уедут на Tailwind-дефолт.
 

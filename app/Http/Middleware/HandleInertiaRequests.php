@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\DTO\AuthUserData;
+use App\Support\Inertia\FlashBag;
 use App\Support\Navigation\NavigationBuilder;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -18,7 +19,16 @@ class HandleInertiaRequests extends Middleware
     protected $rootView = 'app';
 
     /** Группы PHP-словарей, которые получает фронтенд (ADR 0003). */
-    private const array TRANSLATION_GROUPS = ['layout', 'account', 'settings'];
+    private const array TRANSLATION_GROUPS = [
+        'layout',
+        'account',
+        'settings',
+        'activitylog',
+        'admin',
+        'solution',
+        'progresses',
+        'views',
+    ];
 
     /**
      * Determines the current asset version.
@@ -46,6 +56,8 @@ class HandleInertiaRequests extends Middleware
                 'user' => fn() => $request->user() ? AuthUserData::fromModel($request->user()) : null,
             ],
             'locale' => app()->getLocale(),
+            // префикс относительных ключей useTView(), страница задаёт его в Controller::inertia()
+            'scope' => null,
             'translations' => fn() => array_combine(
                 self::TRANSLATION_GROUPS,
                 array_map(fn(string $group) => trans($group), self::TRANSLATION_GROUPS),
@@ -55,16 +67,8 @@ class HandleInertiaRequests extends Middleware
             // Для нативных <form method="post">: выход и dev-login уходят в Blade-территорию полной перезагрузкой.
             'csrfToken' => fn() => csrf_token(),
             'colorScheme' => fn() => $request->cookie('mantine-color-scheme') === 'dark' ? 'dark' : 'light',
-            'flash' => function () {
-                foreach (['success', 'error', 'warning', 'info'] as $level) {
-                    $message = session($level);
-                    if ($message) {
-                        return ['message' => $message, 'level' => $level];
-                    }
-                }
-
-                return null;
-            },
+            // ponytail: Inertia показывает одно сообщение, остальные теряются; массив — когда появятся экшены с несколькими
+            'flash' => fn() => app(FlashBag::class)->pull()[0] ?? null,
         ]);
     }
 }

@@ -1,13 +1,14 @@
 import { test, expect } from '@playwright/test';
+import { user } from '../stand';
 
 test('chapters add new comment', async ({ page }) => {
   // Открыть страницу (выбери любую)
-  await page.goto('https://sicp.hexlet.io/ru/chapters/8');
+  await page.goto('/chapters/8');
 
   // Залогиниться
   await page.getByRole('main').getByRole('link', { name: 'Вход' }).click();
-  await page.getByRole('textbox', { name: 'Электронная почта' }).fill('test@test.com');
-  await page.getByRole('textbox', { name: 'Пароль' }).fill('12345678');
+  await page.getByRole('textbox', { name: 'Электронная почта' }).fill(user.email);
+  await page.getByRole('textbox', { name: 'Пароль' }).fill(user.password);
   await page.getByRole('button', { name: 'Отправить' }).click();
 
   // Найти текстовое поле по тексту-подсказке
@@ -26,12 +27,12 @@ test('chapters add new comment', async ({ page }) => {
 
 test('delete the comment', async ({ page }) => {
   // Переходим на страницу главы
-  await page.goto('https://sicp.hexlet.io/ru/chapters/8');
+  await page.goto('/chapters/8');
 
   // Логинимся
   await page.getByRole('main').getByRole('link', { name: 'Вход' }).click();
-  await page.getByRole('textbox', { name: 'Электронная почта' }).fill('test@test.com');
-  await page.getByRole('textbox', { name: 'Пароль' }).fill('12345678');
+  await page.getByRole('textbox', { name: 'Электронная почта' }).fill(user.email);
+  await page.getByRole('textbox', { name: 'Пароль' }).fill(user.password);
   await page.getByRole('button', { name: 'Отправить' }).click();
 
   // Ждём, пока комментарии прогрузятся

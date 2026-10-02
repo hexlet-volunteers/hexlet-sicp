@@ -1,7 +1,10 @@
 import { test, expect } from '@playwright/test';
+import { isProduction } from '../stand';
 
-test('register end delete user', async ({ page }) => {
-  await page.goto('https://sicp.hexlet.io/ru');
+test('register end delete user', async ({ page, baseURL }) => {
+  test.skip(isProduction(baseURL), 'заводит или удаляет аккаунт — не в продакшене');
+
+  await page.goto('/');
 
   // Регистрируем тестового пользователя
   await page.getByRole('link', { name: 'Регистрация' }).click();

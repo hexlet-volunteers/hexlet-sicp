@@ -17,8 +17,16 @@ class Controller extends BaseController
     use DispatchesJobs;
     use ValidatesRequests;
 
-    protected function inertia(array $props = [], ?string $view = null): Response
+    /**
+     * @param string|null $scope префикс ключей переводов страницы для useTView(); задаётся явно,
+     *     потому что legacy-словари не совпадают с именами контроллеров
+     */
+    protected function inertia(array $props = [], ?string $view = null, ?string $scope = null): Response
     {
+        if ($scope !== null) {
+            Inertia::share('scope', $scope);
+        }
+
         if (class_exists(Debugbar::class)) {
             Debugbar::addMessage(Inertia::getShared(), 'sharedProps');
             Debugbar::addMessage($props, 'pageProps');

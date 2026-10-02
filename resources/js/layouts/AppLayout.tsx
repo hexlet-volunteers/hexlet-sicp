@@ -14,32 +14,12 @@ import {
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
-import {
-  IconChevronDown,
-  IconCode,
-  IconDownload,
-  IconMessages,
-  IconShieldLock,
-  IconUser,
-  IconUsers,
-} from '@tabler/icons-react'
+import { IconChevronDown, IconUser } from '@tabler/icons-react'
 import { useEffect } from 'react'
+import { ItemIcon } from '@/components/ui/ItemIcon'
 import { NavAnchor, NavMenuItem } from '@/components/ui/NavAnchor'
 
-const icons: Record<string, typeof IconUser> = {
-  'shield-lock': IconShieldLock,
-  users: IconUsers,
-  messages: IconMessages,
-  code: IconCode,
-  download: IconDownload,
-}
-
 const flashColors = { success: 'green', error: 'red', warning: 'yellow', info: 'blue' } as const
-
-function ItemIcon({ name }: { name: string | null }) {
-  const Icon = name ? icons[name] : null
-  return Icon ? <Icon size={16} /> : null
-}
 
 function MainNav({ items }: { items: App.DTO.Navigation.NavItemData[] }) {
   return items.map((item) =>

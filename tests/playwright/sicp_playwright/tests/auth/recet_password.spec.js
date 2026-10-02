@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('recetting unexisted password', async ({ page }) => {
-  await page.goto('https://sicp.hexlet.io/ru');
+  await page.goto('/');
 
   await page.getByRole('link', { name: 'Вход' }).click();
   await page.getByRole('link', { name: 'Забыли пароль?' }).click();

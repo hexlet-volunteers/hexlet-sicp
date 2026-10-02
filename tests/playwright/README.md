@@ -117,6 +117,21 @@ rm -rf playwright-report test-results
 
 API Reference: https://playwright.dev/docs/api/class-playwright
 
+## Прогон против стенда
+
+По умолчанию спеки ходят в продакшен `https://sicp.hexlet.io`. Адрес задаёт `PLAYWRIGHT_BASE_URL`, учётку для входа — `PLAYWRIGHT_USER_EMAIL` и `PLAYWRIGHT_USER_PASSWORD` (по умолчанию — тестовый пользователь прода). Пути в спеках относительные, русская локаль выбирается через `locale: 'ru-RU'` в конфиге. Спеки, которые заводят и удаляют аккаунты, на проде пропускаются.
+
+Против локального приложения с сидами:
+
+```bash
+php artisan serve --port=8000
+cd tests/playwright/sicp_playwright && npm ci && npx playwright install chromium
+PLAYWRIGHT_BASE_URL=http://127.0.0.1:8000 PLAYWRIGHT_USER_EMAIL=admin@test.com PLAYWRIGHT_USER_PASSWORD=password \
+  npm test -- --reporter=list
+```
+
+`--reporter=list` обязателен в терминале: html-репортёр при падении поднимает сервер отчёта и подвешивает команду. Спеки регистрации оставляют пользователей в базе — повторный прогон упрётся в «email занят», пока их не удалить.
+
 ## 👤 Контакты / Авторы тестов
 
 Команда: QA Hexlet SICP

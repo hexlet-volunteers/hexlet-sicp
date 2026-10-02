@@ -6,6 +6,7 @@ use App\Models\Solution;
 use App\Models\User;
 use Database\Seeders\ChaptersTableSeeder;
 use Database\Seeders\ExercisesTableSeeder;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\ControllerTestCase;
 
 class SolutionControllerTest extends ControllerTestCase
@@ -29,8 +30,22 @@ class SolutionControllerTest extends ControllerTestCase
     {
         $solution = $this->user->solutions()->first();
 
-        $response = $this->get(route('users.solutions.show', [$this->user, $solution]));
-        $response->assertOk();
+        $exercise = $solution->exercise;
+        $versions = $exercise->solutions()->where('user_id', $this->user->id)->orderBy('id')->get();
+
+        $this->get(route('users.solutions.show', [$this->user, $solution]))
+            ->assertOk()
+            ->assertSee('<meta name="robots" content="noindex, nofollow">', false)
+            ->assertInertia(fn(Assert $page) => $page
+                ->component('Solution/Show')
+                ->where('title', __('solution.solution_for_title', ['exercise' => $exercise->getFullTitle()]))
+                ->where('exerciseTitle', $exercise->getFullTitle())
+                ->where('exerciseUrl', route('exercises.show', $exercise))
+                ->where('userName', $this->user->name)
+                ->where('userUrl', route('users.show', $this->user))
+                ->has('versions', $versions->count())
+                ->where('versions.0.id', $versions->first()->id)
+                ->where('versions.0.content', $versions->first()->content));
     }
 
     public function testShowOfForeignSolutionIsForbidden(): void

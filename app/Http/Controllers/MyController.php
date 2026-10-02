@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Chapter;
+use App\DTO\Progress\ChapterNodeData;
+use App\DTO\Progress\MyProgressPageData;
 use App\Models\User;
+use App\Services\ChapterProgressService;
 use Auth;
-use Illuminate\View\View;
+use Inertia\Response;
 
 class MyController extends Controller
 {
@@ -14,23 +16,28 @@ class MyController extends Controller
         $this->middleware('auth');
     }
 
-    public function show(): View
+    public function show(ChapterProgressService $chapterProgressService): Response
     {
         /** @var User $user */
         $user = Auth::user();
         $user->load('exerciseMembers', 'chapterMembers');
 
-        $chapters = Chapter::with('children', 'exercises')->get();
-        $mainChapters = $chapters->where('parent_id', null);
-        $chapterMembers = $user->chapterMembers->keyBy('chapter_id');
-        $exerciseMembers = $user->exerciseMembers->keyBy('exercise_id');
+        $tree = $chapterProgressService->buildTreeProgress(
+            $user->chapterMembers->keyBy('chapter_id'),
+            $user->exerciseMembers->keyBy('exercise_id'),
+        );
 
-        return view('my.index', compact(
-            'user',
-            'chapters',
-            'exerciseMembers',
-            'mainChapters',
-            'chapterMembers',
-        ));
+        $page = new MyProgressPageData(
+            userName: $user->name,
+            userUrl: route('users.show', $user),
+            solutionsUrl: route('my.solutions.index'),
+            chapters: $tree->map(ChapterNodeData::fromProgress(...))->values()->all(),
+        );
+
+        return $this->inertia($page->toArray())
+            ->withViewData([
+                'robots' => 'noindex, nofollow',
+                'description' => __('my.description'),
+            ]);
     }
 }

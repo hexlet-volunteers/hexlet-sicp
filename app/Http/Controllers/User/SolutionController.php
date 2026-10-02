@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\User;
 
+use App\DTO\Solution\SolutionShowPageData;
 use App\Http\Controllers\Controller;
 use App\Models\Solution;
 use App\Models\User;
-use Illuminate\View\View;
+use Inertia\Response;
 
 class SolutionController extends Controller
 {
@@ -16,19 +17,12 @@ class SolutionController extends Controller
         $this->authorizeResource(Solution::class, 'solution');
     }
 
-    public function show(User $user, Solution $solution): View
+    public function show(User $user, Solution $solution): Response
     {
-        $currentExercise = $solution->exercise;
+        $page = SolutionShowPageData::fromExercise($solution->exercise, $user);
 
-        $solutionsListForCurrentExercise = $solution->exercise
-            ->solutions()
-            ->where('user_id', $user->id)
-            ->get();
-
-        return view('solution.show', compact(
-            'currentExercise',
-            'solutionsListForCurrentExercise',
-            'user'
-        ));
+        // Имя компонента явное: автовывод дал бы User/Solution/Show — копию Solution/Show.
+        return $this->inertia($page->toArray(), 'Solution/Show')
+            ->withViewData(['robots' => 'noindex, nofollow', 'description' => $page->description()]);
     }
 }

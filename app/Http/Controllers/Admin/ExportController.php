@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\DTO\Admin\ExportData;
+use App\DTO\Admin\ExportPageData;
+use App\DTO\Admin\ExportTypeData;
 use App\Services\AnalyticsExporter;
-use Illuminate\Http\Request;
-use Illuminate\View\View;
+use App\Support\Navigation\NavigationBuilder;
+use Inertia\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ExportController extends AdminController
@@ -16,9 +18,22 @@ class ExportController extends AdminController
         parent::__construct();
     }
 
-    public function index(Request $request): View
+    /** Значения, которые принимает AnalyticsExporter::export(). */
+    private const array TYPES = ['users', 'chapters', 'exercises', 'solutions', 'comments', 'activity'];
+
+    public function index(NavigationBuilder $navigation): Response
     {
-        return view('admin.export');
+        $page = new ExportPageData(
+            types: array_map(
+                fn(string $type) => new ExportTypeData($type, __("admin.export.types.{$type}")),
+                self::TYPES,
+            ),
+            storeUrl: route('admin.export.store'),
+            menu: $navigation->admin(),
+        );
+
+        return $this->inertia($page->toArray())
+            ->withViewData(['robots' => 'noindex, nofollow']);
     }
 
     public function store(ExportData $request): BinaryFileResponse

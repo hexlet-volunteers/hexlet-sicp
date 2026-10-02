@@ -11,7 +11,7 @@
 
 Bootstrap и Mantine живут каждый в своём корне: reboot-стили Bootstrap ломают Mantine.
 
-Каркас Inertia-половины: `theme.ts`, `i18n.ts`, `layouts/AppLayout.tsx` (шапка и футер), `layouts/SettingsLayout.tsx`, `components/ui/`. Легаси `.jsx` (редактор упражнений, `components/*.jsx`) лежит вне `tsc`.
+Каркас Inertia-половины: `theme.ts`, `i18n.ts`, `layouts/AppLayout.tsx` (шапка и футер), `layouts/SettingsLayout.tsx`, `layouts/AdminLayout.tsx`, `components/ui/` (`DataTable`, `Pagination`, `Filter`, `SideMenu`). Легаси `.jsx` (редактор упражнений, `components/*.jsx`) лежит вне `tsc`.
 
 ## Перенос страницы с Blade
 

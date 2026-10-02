@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DTO\Admin\CommentListItemData;
+use App\DTO\Admin\CommentListPageData;
+use App\DTO\Admin\UserFilterData;
+use App\DTO\PaginationData;
 use App\Models\Comment;
+use App\Support\Navigation\NavigationBuilder;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Response;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class CommentController extends AdminController
 {
-    public function index(Request $request): View
+    public function index(Request $request, NavigationBuilder $navigation): Response
     {
         $comments = QueryBuilder::for(Comment::class)
             ->allowedFilters(
@@ -19,9 +24,19 @@ class CommentController extends AdminController
             )
             ->with(['user', 'commentable'])
             ->latest()
+            ->orderByDesc('id')
             ->paginate(50)
-            ->appends($request->query());
+            ->withQueryString();
 
-        return view('admin.comments', compact('comments'));
+        $page = new CommentListPageData(
+            items: array_map(CommentListItemData::fromModel(...), $comments->items()),
+            pagination: PaginationData::fromPaginator($comments),
+            filter: UserFilterData::fromQuery($request),
+            filterUrl: route('admin.comments.index'),
+            menu: $navigation->admin($request->only('filter')),
+        );
+
+        return $this->inertia($page->toArray())
+            ->withViewData(['robots' => 'noindex, nofollow']);
     }
 }

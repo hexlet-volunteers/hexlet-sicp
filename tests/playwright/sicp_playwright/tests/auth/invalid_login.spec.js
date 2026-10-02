@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { user } from '../stand';
 
 test('invalid login (invalid mail + password)', async ({ page }) => {
   // Открыть Главную
-  await page.goto('http://sicp.hexlet.io/ru/');
+  await page.goto('/');
 
   // Залогиниться
   await page.getByRole('link', { name: 'Вход' }).click();
@@ -20,12 +21,12 @@ test('invalid login (invalid mail + password)', async ({ page }) => {
 
 test('invalid login (valid mail + invalid password)', async ({ page }) => {
   // Открыть Главную
-  await page.goto('http://sicp.hexlet.io/ru/');
+  await page.goto('/');
 
   // Залогиниться
   await page.getByRole('link', { name: 'Вход' }).click();
-  await page.getByRole('textbox', { name: 'Электронная почта' }).fill('test@test.com');
-  await page.getByRole('textbox', { name: 'Пароль' }).fill('password');
+  await page.getByRole('textbox', { name: 'Электронная почта' }).fill(user.email);
+  await page.getByRole('textbox', { name: 'Пароль' }).fill(`${user.password}-wrong`);
   await page.getByRole('button', { name: 'Отправить' }).click();
 
   // Увидеть уведомление о неуспешном входе

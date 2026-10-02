@@ -13,8 +13,8 @@ use Illuminate\Http\Request;
 use LaravelLocalization;
 
 /**
- * Состав шапки и футера. Пока его рендерит только Inertia-шелл;
- * _nav.blade.php и _footer.blade.php переводятся на этот класс в #1980.
+ * Состав шапки и футера. Рендерят его Inertia-шелл (shared prop `nav`)
+ * и Blade-лейаут (_nav.blade.php и _footer.blade.php через ViewServiceProvider).
  */
 class NavigationBuilder
 {
@@ -22,6 +22,17 @@ class NavigationBuilder
     private const array INERTIA_ROUTES = [
         'settings.profile.index',
         'settings.account.index',
+        'log.index',
+        'admin.users.index',
+        'solutions.show',
+        'users.solutions.show',
+        'admin.users.edit',
+        'admin.export.index',
+        'my.show',
+        'admin.comments.index',
+        'admin.solutions.index',
+        'solutions.index',
+        'my.solutions.index',
     ];
 
     public function __construct(private Request $request)
@@ -61,6 +72,37 @@ class NavigationBuilder
     }
 
     /**
+     * Меню админки. Боковое меню админской страницы передаёт её фильтр, чтобы
+     * пользователя, найденного в одном списке, искать и в других. В шапку фильтр
+     * не попадает: на публичных страницах у него другие поля.
+     *
+     * @param array<string, array<string, string|null>> $filter
+     * @return array<int, NavItemData>
+     */
+    public function admin(array $filter = []): array
+    {
+        return [
+            $this->route('admin.users.title', 'admin.users.index', 'users', $filter, 'admin.users.*'),
+            $this->route('admin.comments.title', 'admin.comments.index', 'messages', $filter, 'admin.comments.*'),
+            $this->route('admin.solutions.title', 'admin.solutions.index', 'code', $filter, 'admin.solutions.*'),
+            $this->route('admin.export.title', 'admin.export.index', 'download', $filter, 'admin.export.*'),
+        ];
+    }
+
+    /**
+     * Вкладки «Упражнения / Решения». Blade-версия — exercise/navigation.blade.php, её ещё рендерит exercise/index.
+     *
+     * @return array<int, NavItemData>
+     */
+    public function exercises(): array
+    {
+        return [
+            $this->route('layout.nav.exercises', 'exercises.index'),
+            $this->route('views.solution.index.header.h1', 'solutions.index'),
+        ];
+    }
+
+    /**
      * @return array<int, NavItemData>
      */
     private function main(string $locale, ?User $user): array
@@ -73,7 +115,11 @@ class NavigationBuilder
                 ? $this->link('layout.nav.sicp_read', 'https://guides.hexlet.io/how-to-learn-sicp/')
                 : $this->link('layout.nav.sicp_read', route('pages.show', ['page' => 'how-to-learn-sicp'])),
             $this->route('layout.nav.rating', 'top.index'),
-            $this->link('layout.nav.sicp_book', TemplateHelper::getBookLink($locale)),
+            new NavItemData(
+                label: __('layout.nav.sicp_book'),
+                href: TemplateHelper::getBookLink($locale),
+                highlight: true,
+            ),
         ];
 
         if ($user?->can('accessAdmin', User::class)) {
@@ -81,12 +127,7 @@ class NavigationBuilder
                 label: __('admin.title'),
                 href: route('admin.users.index'),
                 icon: 'shield-lock',
-                children: [
-                    $this->route('admin.users.title', 'admin.users.index', icon: 'users'),
-                    $this->route('admin.comments.title', 'admin.comments.index', icon: 'messages'),
-                    $this->route('admin.solutions.title', 'admin.solutions.index', icon: 'code'),
-                    $this->route('admin.export.title', 'admin.export.index', icon: 'download'),
-                ],
+                children: $this->admin(),
             );
         }
 
@@ -156,12 +197,21 @@ class NavigationBuilder
         ];
     }
 
-    private function route(string $labelKey, string $routeName, ?string $icon = null): NavItemData
-    {
+    /**
+     * @param array<string, array<string, string|null>> $parameters
+     * @param string|null $activePattern шаблон routeIs(), если пункт подсвечивается и на вложенных страницах
+     */
+    private function route(
+        string $labelKey,
+        string $routeName,
+        ?string $icon = null,
+        array $parameters = [],
+        ?string $activePattern = null,
+    ): NavItemData {
         return new NavItemData(
             label: __($labelKey),
-            href: route($routeName),
-            active: $this->request->routeIs($routeName),
+            href: route($routeName, $parameters),
+            active: $this->request->routeIs($activePattern ?? $routeName),
             inertia: in_array($routeName, self::INERTIA_ROUTES, true),
             icon: $icon,
         );

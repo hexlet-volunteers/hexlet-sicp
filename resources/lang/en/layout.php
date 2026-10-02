@@ -50,10 +50,12 @@ return [
         'error' => 'Aw, snap! Something went wrong',
     ],
     'common' => [
-        'cancel' => 'Сancel',
+        'cancel' => 'Cancel',
         'close' => 'Close',
         'origin' => 'Go to origin',
+        'reset' => 'Reset',
         'save' => 'Save',
+        'search' => 'Search',
     ],
     'modal' => [
         'title' => 'Report a mistake on the page',

@@ -2,21 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\PaginationData;
+use App\DTO\SelectOptionData;
+use App\DTO\Solution\SolutionFilterData;
+use App\DTO\Solution\SolutionListItemData;
+use App\DTO\Solution\SolutionListPageData;
+use App\DTO\Solution\SolutionShowPageData;
 use App\Models\Exercise;
 use App\Models\Solution;
-use App\Presenters\ExercisePresenter;
+use App\Support\Navigation\NavigationBuilder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Arr;
+use Inertia\Response;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
-use Illuminate\Contracts\View\View;
 
 class SolutionController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, NavigationBuilder $navigation): Response
     {
-        $filter = array_merge(['name' => null, 'exercise_id' => null], (array)$request->input('filter', []));
-
         $solutions = QueryBuilder::for(Solution::versioned())
             ->allowedFilters(
                 AllowedFilter::exact('exercise_id'),
@@ -26,46 +30,46 @@ class SolutionController extends Controller
             ->with(['user', 'exercise'])
             ->whereHas('user')
             ->latest('solutions.created_at')
-            ->paginate(50);
+            ->paginate(50)
+            ->withQueryString();
 
-        $exercises = Exercise::orderBy('id')->get();
-        $exerciseTitles = ExercisePresenter::collection($exercises)
-            ->pluck('fullTitle', 'id');
-
-        $solutionAuthors = [];
-        if (Auth::user()) {
-            $solutionAuthors = [Auth::user()->id => Auth::user()->name];
-        }
-
-        return view(
-            'solution.index',
-            [
-                'solutions' => $solutions,
-                'filter'    => $filter,
-                'exerciseTitles'  => $exerciseTitles,
-                'solutionAuthors' => $solutionAuthors,
-            ]
+        // ponytail: все ~356 упражнений (~15 КБ) в каждом рендере; Inertia::optional, если станет заметно.
+        $exercises = Exercise::orderBy('id')->get()->map(
+            fn(Exercise $exercise) => new SelectOptionData((string) $exercise->id, $exercise->getFullTitle()),
         );
+
+        // Arr::get, а не input('filter.user.name'): ключ буквально «user.name», точка — не вложенность.
+        $filter = (array) $request->input('filter', []);
+        $userName = Arr::get($filter, 'user.name');
+        $exerciseId = Arr::get($filter, 'exercise_id');
+
+        $page = new SolutionListPageData(
+            items: array_map(SolutionListItemData::fromModel(...), $solutions->items()),
+            pagination: PaginationData::fromPaginator($solutions),
+            // ?filter[user.name][]=… QueryBuilder принимает, а строковое поле DTO — нет.
+            filter: new SolutionFilterData(
+                userName: is_string($userName) ? $userName : null,
+                exerciseId: is_string($exerciseId) ? $exerciseId : null,
+            ),
+            filterUrl: route('solutions.index'),
+            exercises: $exercises->all(),
+            tabs: $navigation->exercises(),
+        );
+
+        // Публичная и индексируемая: без SSR это принятый SEO-долг (ADR 0004), noindex не ставим.
+        return $this->inertia($page->toArray());
     }
 
-    public function show(Solution $solution): View
+    public function show(Solution $solution): Response
     {
         if (!$solution->user()->exists()) {
             abort(404);
         }
 
-        $exercise = $solution->exercise;
-        $user = $solution->user;
-        $solutionsListForCurrentExercise = $solution->exercise
-            ->solutions()
-            ->where('user_id', $user->id)
-            ->get();
+        $page = SolutionShowPageData::fromExercise($solution->exercise, $solution->user);
 
-        return view('solution.show', [
-            'solutionsListForCurrentExercise' => $solutionsListForCurrentExercise,
-            'solution' => $solution,
-            'currentExercise' => $exercise,
-            'user' => $user,
-        ]);
+        // Имя компонента явное: User\SolutionController@show рендерит ту же страницу.
+        return $this->inertia($page->toArray(), 'Solution/Show')
+            ->withViewData(['robots' => 'noindex, nofollow', 'description' => $page->description()]);
     }
 }
