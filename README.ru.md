@@ -27,10 +27,10 @@ A: Сбросить кеш конфига `php artisan config:clear`
 
 ### Предварительные требования
 
-* PHP ^8.3
+* PHP ^8.5
 * Composer
-* Node.js (v16+) & NPM (6+)
-* PostgreSQL (локально можно поднять из `docker compose`, см. ниже)
+* Node.js 24+ и pnpm (`corepack enable pnpm` — версия закреплена в `package.json`)
+* PostgreSQL 18 (локально можно поднять из `docker compose`, см. ниже)
 * Heroku cli ([_Как развернуть приложение Laravel на Heroku_](https://ru.hexlet.io/blog/posts/kak-razvernut-prilozhenie-laravel-na-heroku))
 
 Проверить зависимости PHP можно командой `composer check-platform-reqs`

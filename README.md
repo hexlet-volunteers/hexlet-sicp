@@ -29,10 +29,10 @@ A: Reset your config cache `php artisan config:clear`
 
 Run `composer check-platform-reqs` to check PHP deps:
 
-* PHP ^8.3
+* PHP ^8.5
 * Composer
-* Node.js (v16+) & NPM (6+)
-* PostgreSQL (locally you can run it from `docker compose`, see below)
+* Node.js 24+ & pnpm (`corepack enable pnpm` — version is pinned in `package.json`)
+* PostgreSQL 18 (locally you can run it from `docker compose`, see below)
 * [heroku cli](https://devcenter.heroku.com/articles/heroku-cli#download-and-install); [How to deploy Laravel on Heroku](https://ru.hexlet.io/blog/posts/kak-razvernut-prilozhenie-laravel-na-heroku) (in Russian)
 
 [What is a Version Manager?](https://guides.hexlet.io/version-managers/)
