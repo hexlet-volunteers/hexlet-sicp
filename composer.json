@@ -28,7 +28,6 @@
         "fakerphp/faker": "^1.24.1",
         "guzzlehttp/guzzle": "^8.0",
         "hemp/presenter": "^3.0",
-        "http-interop/http-factory-guzzle": "^1.2",
         "iben12/laravel-statable": "^1.5",
         "inertiajs/inertia-laravel": "^3.0",
         "knplabs/github-api": "^3.16",
