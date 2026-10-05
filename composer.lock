@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e032ce980a4501e1daedc9f72901aad6",
+    "content-hash": "a9200ad075e8df0a9c10aa095c442b58",
     "packages": [
         {
             "name": "brick/math",
@@ -11624,16 +11624,16 @@
         },
         {
             "name": "heroku/heroku-buildpack-php",
-            "version": "v294",
+            "version": "v295",
             "source": {
                 "type": "git",
                 "url": "https://github.com/heroku/heroku-buildpack-php.git",
-                "reference": "2a8f9567a34acc79b6ebc1118196cfeda031ca2a"
+                "reference": "b88c26ae9367bdc072e94aaa9b833063d356c4f0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/heroku/heroku-buildpack-php/zipball/2a8f9567a34acc79b6ebc1118196cfeda031ca2a",
-                "reference": "2a8f9567a34acc79b6ebc1118196cfeda031ca2a",
+                "url": "https://api.github.com/repos/heroku/heroku-buildpack-php/zipball/b88c26ae9367bdc072e94aaa9b833063d356c4f0",
+                "reference": "b88c26ae9367bdc072e94aaa9b833063d356c4f0",
                 "shasum": ""
             },
             "bin": [
@@ -11663,9 +11663,9 @@
             ],
             "support": {
                 "issues": "https://github.com/heroku/heroku-buildpack-php/issues",
-                "source": "https://github.com/heroku/heroku-buildpack-php/tree/v294"
+                "source": "https://github.com/heroku/heroku-buildpack-php/tree/v295"
             },
-            "time": "2026-07-31T14:30:30+00:00"
+            "time": "2026-09-02T19:21:54+00:00"
         },
         {
             "name": "iamcal/sql-parser",
