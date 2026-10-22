@@ -77,7 +77,7 @@ Hexlet SICP — трекер изучения книги SICP: пользова�
 
 ### Проверка решений (ключевой флоу)
 
-- `app/Services/SolutionChecker.php` исполняет `raco test` (Racket) в шелле, оборачивая код+тесты в sandbox-шаблон; временные файлы — в `storage/solutions/`.
+- `app/Services/SolutionChecker.php` пишет решение и тесты в `storage/solutions/` и запускает `racket resources/racket/sandbox.rkt <решение> <тесты>`.
 - `app/Services/ExerciseService.php` оркестрирует `check()` (валидация → лог активности → переход в finished + баллы) и `createSolution()`.
 - API: `POST /api/exercises/{id}/check`, `POST /api/exercises/{id}/solutions`, `GET /api/exercises/{id}`.
 
@@ -90,7 +90,8 @@ Hexlet SICP — трекер изучения книги SICP: пользова�
 ## Security
 
 - Racket/Scheme-код пользователя исполняется в `racket/sandbox`: `sandbox-memory-limit` 256 MB, `sandbox-eval-limits` 10 с / 128 MB на вычисление; сеть, подпроцессы и доступ к файлам блокирует стандартный security guard. Сверху процесс ограничен внешним `timeout 20s`.
-- **Known gap (#1936):** эти лимиты действуют только внутри evaluator'а. Код студента вклеивается в исходник модуля-обёртки (`solution_sandbox_wrapper.blade.php`), поэтому ввод, закрывающий окружающие формы, попадает на верхний уровень файла, где security guard уже не действует. Изоляции уровня ОС вокруг процесса `racket` нет.
+- Лимиты и security guard действуют только внутри evaluator'а, поэтому код студента попадает туда **только как данные**: `sandbox.rkt` читает файл решения через `read` (с выключенными `read-accept-reader`/`-lang`/`-compiled`) и собирает из форм модуль песочницы. Вклеенный в исходник текст оказывается на верхнем уровне файла, вне guard'а — это был побег #1936.
+- **Known gap (#1936):** изоляции уровня ОС вокруг процесса `racket` нет.
 - **Known gap (#1941):** временные файлы решений именуются от `time()` и id упражнения — предсказуемо и с риском коллизий — и никогда не удаляются. Плановой очистки нет.
 - Новый путь исполнения шелла проходит через тот же sandbox, что и `SolutionChecker`.
 - Админские маршруты закрыты на уровне группы маршрутов (`auth` + `can:access-admin`), а не только в `AdminController::__construct`. Так и оставлять: наследник, переопределивший конструктор без вызова `parent::__construct()`, молча теряет проверку — это был #1938.
