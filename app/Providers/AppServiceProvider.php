@@ -3,9 +3,6 @@
 namespace App\Providers;
 
 use App;
-use App\Github\Github;
-use App\Github\GithubInterface;
-use Github\Client;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use URL;
@@ -19,27 +16,12 @@ use Spatie\LaravelTypeScriptTransformer\TypeScriptTransformerApplicationServiceP
 
 class AppServiceProvider extends ServiceProvider
 {
-    public array $bindings = [
-        GithubInterface::class => Github::class,
-    ];
-
     /**
      * Register any application services.
      *
      */
     public function register(): void
     {
-        $this->app->singleton(Client::class, function (): Client {
-            $githubClient = new Client();
-            $githubToken = (string) config('github.connections.main.token', '');
-
-            if ($githubToken !== '') {
-                $githubClient->authenticate($githubToken, null, Client::AUTH_ACCESS_TOKEN);
-            }
-
-            return $githubClient;
-        });
-
         if (class_exists(TypeScriptTransformerApplicationServiceProvider::class)) {
             $this->app->register(TypeScriptTransformerServiceProvider::class);
         }

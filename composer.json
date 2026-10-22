@@ -30,7 +30,6 @@
         "hemp/presenter": "^3.0",
         "iben12/laravel-statable": "^1.5",
         "inertiajs/inertia-laravel": "^3.0",
-        "knplabs/github-api": "^3.16",
         "laracasts/flash": "^3.2",
         "laravel/framework": "^13",
         "laravel/socialite": "^5.11",
@@ -70,8 +69,7 @@
         "optimize-autoloader": true,
         "sort-packages": true,
         "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "php-http/discovery": true
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     },
     "extra": {

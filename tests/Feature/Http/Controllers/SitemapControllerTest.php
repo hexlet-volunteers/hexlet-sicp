@@ -2,41 +2,22 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Github\GithubInterface;
-use Github\Api\Gists;
+use App\Models\Exercise;
 use Tests\TestCase;
 
 class SitemapControllerTest extends TestCase
 {
     public function testIndex(): void
     {
-        $gists = $this->createMock(Gists::class);
-        $gists->method('show')->willReturn(
-            $this->getFixture()
-        );
-
-        $github = $this->getMockBuilder(GithubInterface::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['gists'])
-            ->getMock();
-        $github->method('gists')->willReturn($gists);
-
-        $this->app->instance(GithubInterface::class, $github);
+        $exercise = Exercise::factory()->create();
 
         $response = $this->get('/sitemap.xml');
 
         $response->assertOk();
-    }
-
-    private function getFixture(): array
-    {
-        $sitemapFilepath = base_path('tests/fixtures/sitemap.xml');
-        return [
-            "files" => [
-                "sitemap.xml" => [
-                    "content" => file_get_contents($sitemapFilepath),
-                ],
-            ],
-        ];
+        $response->assertHeader('Content-Type', 'application/xml');
+        $response->assertSee(route('chapters.show', $exercise->chapter_id), false);
+        $response->assertSee(route('exercises.show', $exercise), false);
+        $response->assertSee(route('pages.show', 'about'), false);
+        $response->assertDontSee('/en/', false);
     }
 }
