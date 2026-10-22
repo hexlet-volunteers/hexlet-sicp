@@ -79,6 +79,9 @@ class Kernel extends HttpKernel
      * @var string[]
      */
     protected $middlewarePriority = [
+        // Без них StartSession обгоняет расшифровку cookie на api-роутах с web (#1936).
+        \App\Http\Middleware\EncryptCookies::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
         \Illuminate\Session\Middleware\StartSession::class,
         \Illuminate\View\Middleware\ShareErrorsFromSession::class,
         \App\Http\Middleware\Authenticate::class,
