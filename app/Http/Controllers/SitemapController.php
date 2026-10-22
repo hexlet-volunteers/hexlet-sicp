@@ -17,7 +17,6 @@ class SitemapController extends Controller
         'solutions.index',
         'top.index',
         'comments_top.index',
-        'comments.index',
         'log.index',
     ];
 
