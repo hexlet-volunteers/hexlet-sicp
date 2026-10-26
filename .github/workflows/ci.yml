@@ -49,6 +49,30 @@ jobs:
           persist-credentials: false
       - uses: jdx/jactionlint@a65ab044e916760429068fe5794b8306abdfcbb9 # v2.3.0
 
+  # Секреты во всей истории git (#2071): вся история сканируется за секунды,
+  # поэтому каждый прогон проверяет её целиком. Ложные находки — в .betterleaksignore.
+  betterleaks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      # Action у betterleaks нет. Ставим стабильную ветку v1 (v2 пока в RC) из
+      # релиза с проверкой sha256 из checksums.txt; при обновлении менять обе строки.
+      - name: Install betterleaks
+        env:
+          VERSION: 1.9.0
+          SHA256: f8b185a39ffcece2a1ca82bf3a4e7435cd81963ffd16b7a9128daf75f35f6de7
+        run: |
+          curl -sSfL -o betterleaks.tar.gz \
+            "https://github.com/betterleaks/betterleaks/releases/download/v${VERSION}/betterleaks_${VERSION}_linux_x64.tar.gz"
+          echo "${SHA256}  betterleaks.tar.gz" | sha256sum -c -
+          tar -xzf betterleaks.tar.gz -C "$RUNNER_TEMP" betterleaks
+      - name: Scan git history for secrets
+        run: '"$RUNNER_TEMP/betterleaks" git . --redact --no-banner'
+
   build:
     runs-on: ubuntu-latest
     # Обычный прогон — около 5 минут, сборка образа без кэша — до 45.

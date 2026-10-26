@@ -1,0 +1,35 @@
+# Находки betterleaks, проверенные вручную: настоящих секретов среди них нет (#2071).
+# Формат — отпечаток commit:file:rule:line из отчёта (`--report-format json`, поле Fingerprint).
+# Новая ложная находка: проверь, что это не секрет, и добавь её отпечаток сюда.
+# Настоящий секрет сюда не добавляют: его отзывают и вычищают из кода.
+
+# Строки переводов: «Пароль», «Сбросить пароль»
+f391037f95e9c332eaff944fdafc8b338e9f762c:resources/js/locales/en.js:generic-password:75
+f391037f95e9c332eaff944fdafc8b338e9f762c:resources/js/locales/en.js:generic-password:76
+f391037f95e9c332eaff944fdafc8b338e9f762c:resources/js/locales/ru.js:generic-password:75
+f391037f95e9c332eaff944fdafc8b338e9f762c:resources/js/locales/ru.js:generic-password:76
+
+# Пароль тестовой фикстуры
+55a37759cd1ebdb8a99196333c79e985f9ae1403:tests/Feature/Http/Controllers/Auth/LoginControllerTest.php:generic-password:12
+
+# Заглушки в README и .env.example (secret, your_secure_password)
+07c7c4992ef5bdcb5f3d56ea52e9c2a1a6b280cf:README.md:generic-password:55
+17b93042f51ea14833c1d989ddaa3e59c97ebf1d:.env.example:generic-password:14
+1c3812efe5eb94e50d5b2a25c449738044316915:README.md:generic-password:147
+1c3812efe5eb94e50d5b2a25c449738044316915:README.ru.md:generic-password:142
+446b39301c5c444c4cb005c337c1fd595689ee58:README.en.md:generic-password:101
+446b39301c5c444c4cb005c337c1fd595689ee58:README.en.md:generic-password:69
+446b39301c5c444c4cb005c337c1fd595689ee58:README.md:generic-password:101
+446b39301c5c444c4cb005c337c1fd595689ee58:README.md:generic-password:69
+5ace7a1731ec1cb8003fdef0d94d15204d35cf88:README.ru.md:generic-password:67
+5ace7a1731ec1cb8003fdef0d94d15204d35cf88:README.ru.md:generic-password:99
+5b32c9d28980472940a620d172a477492c7bb31e:README.md:generic-password:84
+c3c53e5dfe6c5baee874296b44efcd1c7cbf2c27:.env.example:generic-password:15
+f37fffea132e3f61a893e496cd165bf7c4b446f2:README.en.md:generic-password:103
+f37fffea132e3f61a893e496cd165bf7c4b446f2:README.en.md:generic-password:74
+
+# Пароль локального Postgres в docker-compose и старом воркфлоу (postgres, secret)
+07c7c4992ef5bdcb5f3d56ea52e9c2a1a6b280cf:docker-compose.yml:generic-password:7
+4256996e5ee341a4a2cb756f56a9a31ece4f4785:.github/workflows/main.yml:generic-password:68
+fc2cadd2f5194246573f39835195afb7e3182db6:.github/workflows/main.yml:generic-password:18
+fc2cadd2f5194246573f39835195afb7e3182db6:.github/workflows/main.yml:generic-password:56
