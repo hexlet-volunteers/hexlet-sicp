@@ -53,7 +53,7 @@
         "allure-framework/allure-phpunit": "^3.3",
         "barryvdh/laravel-debugbar": "^4.2",
         "barryvdh/laravel-ide-helper": "^3.0",
-        "heroku/heroku-buildpack-php": "^295",
+        "heroku/heroku-buildpack-php": "^297",
         "larastan/larastan": "^3.1",
         "laravel/boost": "^2.4",
         "mockery/mockery": "^1.6",
