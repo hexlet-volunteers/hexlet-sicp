@@ -133,7 +133,6 @@ declare namespace App {
         namespace Api {
             export type CheckSolutionData = {
                 solution_code: string;
-                user_id: number | null;
             };
             export type SaveSolutionData = {
                 user_id: number;
