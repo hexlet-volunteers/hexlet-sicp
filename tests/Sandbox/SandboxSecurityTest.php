@@ -83,4 +83,12 @@ class SandboxSecurityTest extends TestCase
         $this->assertTrue($checkResult->isFailedTests(), 'Запись файла должна быть заблокирована.');
         $this->assertFileDoesNotExist($target, 'Студент не должен мочь создать файл на диске.');
     }
+
+    public function testSolutionIsReadAsDataNotSpliced(): void
+    {
+        $checkResult = $this->solutionChecker->check($this->exercise, $this->attack(')'));
+
+        $this->assertTrue($checkResult->isFailedTests());
+        $this->assertStringContainsString('read: unexpected `)`', $checkResult->getOutput());
+    }
 }

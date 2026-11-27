@@ -15,25 +15,20 @@ class SolutionChecker
             return new CheckResultData(CheckResultData::SUCCESS_EXIT_CODE);
         }
 
-        $tests = $exercise->getExerciseTests();
-        $contents = view(
-            'exercise.solution_sandbox_wrapper',
-            [
-                'solution' => $this->prettifyCode($solutionCode),
-                'tests' => $this->prettifyCode($tests),
-            ]
-        )->render();
-
         $hashedUserExerciseSolutionId = hash('sha256', implode('', [time(), $exercise->id]));
-        $userSolutionPath = sprintf('solutions/%s.rkt', $hashedUserExerciseSolutionId);
+        $solutionFile = sprintf('solutions/%s.rkt', $hashedUserExerciseSolutionId);
+        $testsFile = sprintf('solutions/%s_tests.rkt', $hashedUserExerciseSolutionId);
 
-        Storage::put($userSolutionPath, $contents);
-        $solutionPath = Storage::path($userSolutionPath);
+        Storage::put($solutionFile, $solutionCode);
+        Storage::put($testsFile, $exercise->getExerciseTests());
         // todo необходимо перейти на новые компоненты laravel 10
-        // Файл сам по себе является harness'ом: строит песочницу racket/sandbox,
-        // прогоняет тесты внутри неё и выставляет exit-код. Внешний `timeout` —
-        // подстраховка на случай зависания вне eval-лимита песочницы.
-        $command = new Command("timeout 20s racket {$solutionPath}");
+        // sandbox.rkt читает оба файла как данные и прогоняет тесты в песочнице
+        // racket/sandbox, выставляя exit-код. Внешний `timeout` — подстраховка
+        // на случай зависания вне eval-лимита песочницы.
+        $command = new Command('timeout 20s racket');
+        $command->addArg(resource_path('racket/sandbox.rkt'));
+        $command->addArg(Storage::path($solutionFile));
+        $command->addArg(Storage::path($testsFile));
 
         $command->execute();
 
@@ -43,14 +38,5 @@ class SolutionChecker
             : $command->getError();
 
         return new CheckResultData($exitCode, $output);
-    }
-
-    private function prettifyCode(string $code): string
-    {
-        $indent = str_repeat(' ', 28);
-        $lines = explode("\n", $code);
-        $indentedLines = array_map(fn($line) => "{$indent}$line", $lines);
-
-        return implode("\n", $indentedLines);
     }
 }
